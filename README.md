@@ -9,10 +9,10 @@ To clone the DeepMEI, use the following command:<br/>
 git clone https://github.com/xuxif/DeepMEI.git
 ```
 <br />
-##Software version requirements :
-###1.samtools (test on 1.15.1)
-###2.bedtools (test on v2.30.0)
-###3.pysam v0.17.0
-###4.BWA
-###5.RepeatMasker
+##Software version requirements :<br />
+1.samtools (test on 1.15.1)<br />
+2.bedtools (test on v2.30.0)<br />
+3.pysam v0.17.0<br />
+4.BWA<br />
+5.RepeatMasker<br />
 </br>
