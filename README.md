@@ -10,9 +10,10 @@ git clone https://github.com/xuxif/DeepMEI.git
 ```
 ##
 ## Software version requirements : <br />
-1.samtools (test on 1.15.1)<br />
-2.bedtools (test on v2.30.0)<br />
-3.pysam v0.17.0<br />
+1.samtools 1.15.1<br />
+2.bedtools v2.30.0<br />
+3.pysam 0.17.0<br />
 4.BWA<br />
 5.RepeatMasker<br />
+6.Tensorflow v2.7.0
 </br>
