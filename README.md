@@ -1,2 +1,2 @@
 # DeepMEI
-A CNN model to identify MEIs in WGS 
+DeepMEI is a convolutional neural network based tool to identify non-reference MEIs in short-read sequencing data
