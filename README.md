@@ -34,7 +34,7 @@ git clone https://github.com/xuxif/DeepMEI.git
  ```
  pip install pysam=0.6.0
  ```
-5. Conda install samtools, bedtools and BWA
+5. Conda install samtools, bedtools, BWA and RepeatMasker
   ```
   conda activate deepmei
   conda install samtools bedtools  bwa -y
