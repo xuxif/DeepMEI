@@ -19,5 +19,18 @@ git clone https://github.com/xuxif/DeepMEI.git
 7. python 3.8<br />
 8. perl v5.32.1<br />
 9. Anaconda (optinal)<br />
+### Recommended Environment Configuration Steps
+1. Insatll Anaconda in your server.
+2. Create a new conda environment using the deepmei.yml file we provided
+ ```
+  conda activate deepmei
+  conda env create -n deepmei -f deepmei.yml
+ ```
+3. Pip install pysam and 
+4. Conda install samtools, bedtools and BWA
+  ```
+  conda activate deepmei
+  conda install samtools bedtools  bwa -y
+  ```
 
 </br>
