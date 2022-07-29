@@ -40,5 +40,10 @@ git clone https://github.com/xuxif/DeepMEI.git
   conda install samtools bedtools  bwa -y
   conda install repeatmasker -y
   ```
+#### Configure your server with a .yml file of conda in our server
+ ```
+   conda env create -n deepmei -f deepmei.yml
+  
+ ```
 
 </br>
