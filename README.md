@@ -23,14 +23,15 @@ git clone https://github.com/xuxif/DeepMEI.git
 1. Insatll Anaconda in your server.
 2. Create a new conda environment using the deepmei.yml file we provided
  ```
-  conda activate deepmei
   conda env create -n deepmei -f deepmei.yml
+  conda activate deepmei
  ```
 3. Pip install pysam and 
 4. Conda install samtools, bedtools and BWA
   ```
   conda activate deepmei
   conda install samtools bedtools  bwa -y
+  conda install repeatmasker -y
   ```
 
 </br>
