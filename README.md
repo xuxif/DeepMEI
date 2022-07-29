@@ -30,7 +30,7 @@ git clone https://github.com/xuxif/DeepMEI.git
  ```
  conda install tensorflow=2.7.0
  ```
-4. Pip install pysam and 
+4. Pip install pysam 
  ```
  pip install pysam=0.6.0
  ```
