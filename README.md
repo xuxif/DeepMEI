@@ -26,8 +26,15 @@ git clone https://github.com/xuxif/DeepMEI.git
   conda env create -n deepmei -f deepmei.yml
   conda activate deepmei
  ```
-3. Pip install pysam and 
-4. Conda install samtools, bedtools and BWA
+3. Install Tensorflow 2.7.0
+ ```
+ conda install tensorflow=2.7.0
+ ```
+4. Pip install pysam and 
+ ```
+ pip install pysam=0.6.0
+ ```
+5. Conda install samtools, bedtools and BWA
   ```
   conda activate deepmei
   conda install samtools bedtools  bwa -y
