@@ -21,9 +21,9 @@ git clone https://github.com/xuxif/DeepMEI.git
 9. Anaconda (optinal)<br />
 ### Recommended Environment Configuration Steps
 1. Insatll Anaconda in your server.
-2. Create a new conda environment using the deepmei.yml file we provided
+2. Create a new conda environment 
  ```
-  conda env create -n deepmei -f deepmei.yml
+  conda env create -n deepmei 
   conda activate deepmei
  ```
 3. Install Tensorflow 2.7.0
@@ -32,7 +32,7 @@ git clone https://github.com/xuxif/DeepMEI.git
  ```
 4. Pip install pysam 
  ```
- pip install pysam=0.6.0
+ pip install pysam=0.17.0
  ```
 5. Conda install samtools, bedtools, BWA and RepeatMasker
   ```
