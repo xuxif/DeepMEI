@@ -26,12 +26,12 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 3. Install Tensorflow 2.7.0
 
 ```
- conda install tensorflow=2.7.0
+  conda install tensorflow=2.7.0
  ```
 4. Pip install pysam 
 
 ```
- pip install pysam=0.17.0
+  pip install pysam=0.17.0
  ```
 5. Conda install samtools, bedtools, BWA and RepeatMasker
  
@@ -49,24 +49,30 @@ The above steps detail the installation process of all dependencies. We also pro
 
 ##  How to run DeepMEI <br />
 1. Clone the DeepMEI:<br/>
+
 ```
-git clone https://github.com/xuxif/DeepMEI.git
+  git clone https://github.com/xuxif/DeepMEI.git
 ```
 <br />
+
 2. Move the deepmei folder to the working directory (save all running and final result files of the program) <br />
 
 ```
-mv DeepMEI your_workdir
+  mv DeepMEI your_workdir
 ```
 <br />
+
 3. input <br/>
-&nbsp &nbsp &nbsp &nbsp 3.1 Indexed bam (index is optinal)<br/>
-&nbsp &nbsp &nbsp &nbsp   3.2 Reference genome (include .fai)<br/>
+
+-   Bam file aligned with BWA (index is optinal)<br/>
+-   Reference genome (include .fai)<br/>
+
+
 4. Runing DeepMEI <br />
 
  ```
- conda activate deepmei
- cd your_workdir/DeepMEI
- bash DeepAlu_model/model_test_batch.sh -i test.bam -r reference.fa 
+   conda activate deepmei
+   cd your_workdir/DeepMEI
+   bash DeepAlu_model/model_test_batch.sh -i test.bam -r reference.fa 
  ```
  <br />
