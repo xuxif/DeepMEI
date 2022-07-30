@@ -59,8 +59,8 @@ mv DeepMEI your_workdir
 ```
 <br />
 3. input <br/>
- 3.1 Indexed bam (index is optinal)<br/>
- 3.2 Reference genome (include .fai)<br/>
+   3.1 Indexed bam (index is optinal)<br/>
+   3.2 Reference genome (include .fai)<br/>
 4. Runing DeepMEI <br />
 
  ```
