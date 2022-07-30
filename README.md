@@ -77,3 +77,9 @@ The above steps detail the installation process of all dependencies. We also pro
    bash DeepAlu_model/model_test_batch.sh -i test.bam -r reference.fa 
  ```
  <br />
+ 
+### Parameters:
+-  -r reference genoem
+-  -i input bam file
+-  -q quick model
+-  -r use existed candidate MEIs (skip candidate detection)
