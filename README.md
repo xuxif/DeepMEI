@@ -40,11 +40,10 @@ git clone https://github.com/xuxif/DeepMEI.git
   conda install samtools bedtools  bwa -y
   conda install repeatmasker -y
   ```
-#### Configure your server with a .yml file of conda in our server
+#### Configure your server with a .yml file of conda 
 The above steps detail the installation process of all dependencies. We also provide a conda environment configuration file (deepmei.yml).Users only need to run the following code to configure the required environment.
  ```
    conda env create -n deepmei -f deepmei.yml
-  
  ```
 
 </br>
