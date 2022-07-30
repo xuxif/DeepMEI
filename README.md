@@ -42,12 +42,23 @@ The above steps detail the installation process of all dependencies. We also pro
  ```
 </br>
 
-##  How to run DeepVariant
+##  How to run DeepMEI
 ### Download<br/>
-To clone the DeepMEI, use the following command:<br/>
+1. Clone the DeepMEI:<br/>
 ```
 git clone https://github.com/xuxif/DeepMEI.git
 ```
 <br />
-Move the deepmei folder to the working directory (save all running and final result files of the program) <br />
-
+2. Move the deepmei folder to the working directory (save all running and final result files of the program) <br />
+```
+mv DeepMEI <your_workdir>
+```
+3. input
+ 3.1 Indexed bam (index is optinal)
+ 3.2 Reference genome (include .fai)
+4. Runing DeepMEI
+ ```
+ cd your_workdir/DeepMEI
+ bash DeepAlu/model_test_batch.sh -i <bam_file_path.bam> -r <genome_file_path.fa> 
+ ```
+ <br />
