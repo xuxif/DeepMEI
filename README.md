@@ -86,6 +86,7 @@ The above steps detail the installation process of all dependencies. We also pro
 
 -  -r reference genome
 -  -i input bam file
+-  -v the full path of the DeepMEI folder (except for docker)
 
 ##### Optinal
 -  -q quick model
