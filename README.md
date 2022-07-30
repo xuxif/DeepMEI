@@ -79,8 +79,13 @@ The above steps detail the installation process of all dependencies. We also pro
  <br />
  
 ### Parameters:
+
+#### Required
+
 -  -r reference genome
 -  -i input bam file
+
+#### Optinal
 -  -q quick model
 -  -b use existed candidate MEIs (skip candidate detection)
 -  -m mobile element consensus sequence (fastq format and indexed with BWA)
