@@ -84,7 +84,7 @@ The above steps detail the installation process of all dependencies. We also pro
 
 ##### Required
 
--  -r reference genome
+-  -r reference genome (37 or 38 for docker)
 -  -i input bam file
 -  -v the full path of the DeepMEI folder (except for docker)
 
