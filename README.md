@@ -49,6 +49,8 @@ The above steps detail the installation process of all dependencies. We also pro
 </br>
 
 ##  How to run DeepMEI <br />
+
+### Run DeepMEI
 1. Clone the DeepMEI:<br/>
 
 ```
@@ -78,14 +80,14 @@ The above steps detail the installation process of all dependencies. We also pro
  ```
  <br />
  
-### Parameters:
+#### Parameters:
 
-#### Required
+##### Required
 
 -  -r reference genome
 -  -i input bam file
 
-#### Optinal
+##### Optinal
 -  -q quick model
 -  -b use existed candidate MEIs (skip candidate detection)
 -  -m mobile element consensus sequence (fastq format and indexed with BWA)
@@ -94,3 +96,7 @@ The above steps detail the installation process of all dependencies. We also pro
 -  -d sequencing depth (optinal or calculate in chr 1M-2M)
 -  -c remove all tempory file (default remove)
 
+### Output
+
+-  1. A vcf file
+-  2. Bam file around detected MEI
