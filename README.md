@@ -47,4 +47,4 @@ The above steps detail the installation process of all dependencies. We also pro
  ```
 </br>
 
-#####  How to run DeepVariant
+##  How to run DeepVariant
