@@ -79,7 +79,13 @@ The above steps detail the installation process of all dependencies. We also pro
  <br />
  
 ### Parameters:
--  -r reference genoem
+-  -r reference genome
 -  -i input bam file
 -  -q quick model
--  -r use existed candidate MEIs (skip candidate detection)
+-  -b use existed candidate MEIs (skip candidate detection)
+-  -m mobile element consensus sequence (fastq format and indexed with BWA)
+-  -o output file name
+-  -w script directory (for docker)
+-  -d sequencing depth (optinal or calculate in chr 1M-2M)
+-  -c remove all tempory file (default remove)
+
