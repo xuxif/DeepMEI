@@ -3,11 +3,6 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 <br/>
 ![This is an image](https://github.com/xuxif/DeepMEI/blob/main/workflow.png)
 <br/>
-## Download<br/>
-To clone the DeepMEI, use the following command:<br/>
-```
-git clone https://github.com/xuxif/DeepMEI.git
-```
 ##
 ## Software version requirements : <br />
 1. samtools 1.15.1<br />
@@ -48,3 +43,11 @@ The above steps detail the installation process of all dependencies. We also pro
 </br>
 
 ##  How to run DeepVariant
+### Download<br/>
+To clone the DeepMEI, use the following command:<br/>
+```
+git clone https://github.com/xuxif/DeepMEI.git
+```
+<br />
+Move the deepmei folder to the working directory (save all running and final result files of the program) <br />
+
