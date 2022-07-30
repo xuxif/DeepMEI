@@ -65,6 +65,6 @@ mv DeepMEI your_workdir
 
  ```
  cd your_workdir/DeepMEI
- bash DeepAlu/model_test_batch.sh -i <bam_file_path.bam> -r <genome_file_path.fa> 
+ bash DeepAlu/model_test_batch.sh -i test.bam -r reference.fa 
  ```
  <br />
