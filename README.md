@@ -45,7 +45,6 @@ The above steps detail the installation process of all dependencies. We also pro
  ```
    conda env create -n deepmei -f deepmei.yml
  ```
-
 </br>
-##
-#  How to run DeepVariant
+
+#####  How to run DeepVariant
