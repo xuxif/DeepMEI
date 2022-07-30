@@ -18,9 +18,9 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 1. Insatll Anaconda in your server.
 2. Create a new conda environment 
  ```
-  conda env create -n deepmei 
-  conda activate deepmei
+  conda env create -n deepmei <br /> conda activate deepmei
  ```
+ <br />
 3. Install Tensorflow 2.7.0
  ```
  conda install tensorflow=2.7.0
