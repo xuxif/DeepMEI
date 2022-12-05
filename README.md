@@ -74,8 +74,8 @@ The above steps detail the installation process of all dependencies. We also pro
 4. Runing DeepMEI <br />
 
  ```
-   conda activate deepmei
-   cd your_workdir/DeepMEI
+   conda activate deepmei_new
+   cd /path/to/DeepMEI
    bash DeepAlu_model/model_test_batch.sh -i test.bam -r reference.fa 
  ```
  <br />
