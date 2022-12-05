@@ -44,7 +44,7 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 #### Configure your server with a .yml file of conda 
 The above steps detail the installation process of all dependencies. We also provide a conda environment configuration file (deepmei.yml).Users only need to run the following code to configure the required environment.
  ```
-   conda env create -n deepmei -f deepmei.yml
+   conda env create -f deepmei.yml
  ```
 </br>
 
