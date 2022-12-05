@@ -1,4 +1,4 @@
-name: deepmei_new
+name: deepmei
 channels:
   - http://192.168.223.77:8081/repository/conda-bio
   - http://192.168.223.77:8081/repository/conda-forge
