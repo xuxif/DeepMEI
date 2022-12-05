@@ -1,13 +1,13 @@
 name: deepmei
 channels:
-  - http://192.168.223.77:8081/repository/conda-bio
-  - http://192.168.223.77:8081/repository/conda-forge
-  - http://192.168.223.77:8081/repository/conda-menpo/
-  - http://192.168.223.77:8081/repository/conda-msys2/
-  - http://192.168.223.77:8081/repository/conda-forge/
-  - http://192.168.223.77:8081/repository/conda-bio/
-  - http://192.168.223.77:8081/repository/conda-proxy/main
-  - http://192.168.223.77:8081/repository/conda-proxy/free
+  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  msys2: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  bioconda: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  menpo: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  pytorch-lts: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  simpleitk: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=2_gnu
