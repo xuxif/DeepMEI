@@ -223,6 +223,8 @@ cat tmp_size.txt |perl -F'\t' -alne 'if(($F[1]==0 and $F[3]==0) or ($F[1]==0 and
 
 bedtools intersect -a ${base}/DeepAlu/final_vcf/batch_cdgc/deepalu_${output}.polyN.vcf.bed -b  tmp_largeIndel.bed  -wa |sort |uniq > ${base}/DeepAlu/final_vcf/batch_cdgc/deepalu_${output}.final.vcf.bed
 #echo "4"
+cat <(cat ../head.vcf|perl -npe "s/SAMPLE$/${output}/") \
+<(bedtools intersect -a ${base}/DeepAlu/final_vcf/batch_cdgc/deepalu_${output}.final.vcf.bed -b <(cat ${base}/DeepAlu/data_cluster/split_softclipped_${ran_num}/*_BPinfo.txt |perl -npe "s/:.*?\t/\t/"|perl -F'\t' -alne 'if($F[1]>$F[2]) {print "$F[0]\t$F[2]\t$F[1]\t$_";} else { print "$F[0]\t$F[1]\t$F[2]\t$_";}') -wa -wb |cut -f4-9,13-|perl -F'\t' -alne '$F[0]=~s/1/0\/1/;$F[0]=~s/2/1\/1/;print "$F[3]\t$F[4]\t.\tN\t<INS:ME:$F[2]>\t.\tPASS\tSVTYPE=INS;clipPosLeft=$F[4];clipPosRight=$F[5];PS=$F[1];ME=$F[2];TSD_len=$F[6];clipLeftNum=$F[7];clipRightNum=$F[8];clipRate=$F[9];HclipLeftNum=$F[10];HclipRightNum=$F[11];polyN_direction=$F[12]\tGT\t$F[0]";'|sort -k1,1 -k2,2n >${output}.vcf
 
 cd ${base}/DeepAlu/final_vcf/
 samtools view -T $REF $bam_file -O BAM --threads 20  `cat batch_cdgc/deepalu_${output}.bed|cut -f1-3|sort -k1,1 -k2,2n |perl -npe "s/\t/:/;s/\t/\-/;s/\n/ /"|perl -npe "s/$/\n/"`  |samtools sort --threads 20 >batch_cdgc/deepalu_${output}.bam 
@@ -231,9 +233,9 @@ samtools index batch_cdgc/deepalu_${output}.bam
 mkdir ${base}/DeepMEI_output
 mkdir ${base}/DeepMEI_output/$output
 mv ${base}/DeepAlu/final_vcf/batch_cdgc/*${output}*.bed ${base}/DeepMEI_output/$output/
+mv ${base}/DeepAlu/final_vcf/batch_cdgc/${output}.vcf ${base}/DeepMEI_output/$output/
 mv ${base}/DeepAlu/final_vcf/batch_cdgc/*${output}*.bam ${base}/DeepMEI_output/$output/
 mv ${base}/DeepAlu/final_vcf/batch_cdgc/*${output}*.bam.bai ${base}/DeepMEI_output/$output/
-cat ${base}/DeepAlu/data_cluster/split_softclipped_${ran_num}/* >${base}/DeepMEI_output/$output/${output}_BP.txt
 if [ ! -n "$clean" ]; then
 	cd ${base}/DeepAlu/data_cluster/ 
 	echo "#$clean#"
