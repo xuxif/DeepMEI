@@ -161,4 +161,4 @@ dependencies:
   - zlib=1.2.12=h166bdaf_2
   - pip:
     - pysam==0.17.0
-prefix: /home/hjb_xxf/anaconda3/envs/deepmei_new
+prefix: /home/hjb_xxf/anaconda3/envs/deepmei
