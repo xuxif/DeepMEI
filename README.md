@@ -93,7 +93,7 @@ The above steps detail the installation process of all dependencies. We also pro
 -  -b use existed candidate MEIs (skip candidate detection)
 -  -m mobile element consensus sequence (fastq format and indexed with BWA)
 -  -o output file name
--  -w script directory (for docker)
+-  -w script directory 
 -  -d sequencing depth (optinal or calculate in chr 1M-2M)
 -  -c remove all tempory file (default remove)
 
