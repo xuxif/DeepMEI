@@ -99,8 +99,8 @@ The above steps detail the installation process of all dependencies. We also pro
 
 ### Output
 
--  1. A vcf file
--  2. Bam file around detected MEI
+-  1. A VCF file
+-  2. Bam file of detected MEIs
 
 ### Joint calling for MEIs
-      If your ananlysis contains a cohort (or pedigree) a joint calling strategy is necessary. We have test joint calling in 1kGP high coverage WGS and a greatly improvement of sensitivity have been made. In the next version we will provide a joint calling module for DeepMEI. Plesase let us know if you are intersted in this module and we will send you a non-final version, but with joint-calling.
+   If your ananlysis contains a cohort (or pedigree) a joint calling strategy is necessary. We have test joint calling in 1kGP high coverage WGS and a greatly improvement of sensitivity have been made. In the next version we will provide a joint calling module for DeepMEI. Plesase let us know if you are intersted in this module and we will send you a non-final version, but with joint-calling.
