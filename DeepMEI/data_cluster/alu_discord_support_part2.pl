@@ -1,0 +1,533 @@
+use List::Util qw/sum/;
+use List::Util qw/max/;
+$ori_dir="regions";
+$dir="alu_sam";
+$out_dir="split_softclipped";
+$bwa="/public/home/swgenetics_4/software/bwa-0.7.15/bwa";
+$bwa="bwa";
+if(not -e $out_dir)
+{
+	`mkdir $out_dir`;
+}
+$ori_file="$ARGV[0]";
+$ARGV[0]=~s/\..*?$//;
+`cat head.sam >${out_dir}/$ARGV[0]_mapRef.sam`;
+`cat head.sam >${out_dir}/$ARGV[0]_mapClipR.sam`;
+`cat head.sam >${out_dir}/$ARGV[0]_mapClipL.sam`;
+open(MPR,">>${out_dir}/$ARGV[0]_mapRef.sam");
+open(MPCL,">>${out_dir}/$ARGV[0]_mapClipL.sam");
+open(MPCR,">>${out_dir}/$ARGV[0]_mapClipR.sam");
+if($ori_file=~/bam$/)
+{
+	@ori=`cat ${ori_dir}/$ori_file`;
+}
+else
+{
+	@ori=`cat ${ori_dir}/$ori_file`;
+}
+my @read_ori;
+my @left_map_start ,@left_map_end,@left_clip_seq,@left_clip_len,@left_read_i;
+my @right_map_start ,@right_map_end,@right_clip_seq,@right_clip_len,@right_read_i;
+my $i=0,$match_ref=0;
+foreach (@ori)
+{
+	chomp();
+	@read=split(/\t/,$_);
+	#	print "$read[0]\n";
+	$read_ori[$i]=$_;	
+	$match_ref=0;	
+	if($read[5]=~/S/)
+	{
+		$map_start=$read[3];
+		my $alu_pos=$ori_file;
+		$alu_pos=~s/.*:(\d+)\-(\d+).*/\1\t\2/;
+		my @alu_poss=split(/\t/,$alu_pos);
+		$alu_pos=sum(@alu_poss)/2;
+
+		my $tmp_cigar=$read[5];
+		$tmp_cigar=~s/(\d+[^MD\d])//g;
+		$tmp_cigar=~s/[MD]/#/g;
+		$map_len=sum(split(/#/,$tmp_cigar));
+		$map_end=$map_start+$map_len;	
+		my $has_polyAT=0;
+		$tmp_cigar=$read[5];
+		$map_mid_pos=(($map_start+$map_end)/2);
+		my $tmp_cigar=$read[5];
+		
+		if($tmp_cigar=~/\d+S$/ and $tmp_cigar=~/^\d+S/)	
+		{
+			$read_clip_part=1;
+			if(abs($map_start-$alu_pos) < abs($map_end-$alu_pos))
+			{
+				$read_clip_part=0;	
+			}
+		}
+		elsif($tmp_cigar=~/\d+S$/)	
+		{
+			$read_clip_part=1;
+		}
+		elsif($tmp_cigar=~/^\d+S/)	
+		{
+			$read_clip_part=0;
+		}
+		if($read_clip_part==1)
+		{
+			$tmp_cigar=~s/.*M//;
+			my $clip_len=0,$clip_seq;
+			if($tmp_cigar=~/S/)
+			{
+				$tmp_cigar=~s/[A-Z]/#/g;
+				$clip_len=sum(split(/#/,$tmp_cigar));
+				$clip_seq=substr($read[9],-$clip_len);
+
+				$right_map_start[$right_i]=$map_start ;
+				$right_map_end[$right_i]=$map_end;
+				$right_clip_seq[$right_i]=$clip_seq;
+				$right_clip_len[$right_i]=$clip_len;
+				$right_read_i[$right_i]=$i;
+				$right_i++;
+			}
+			else
+			{
+				$match_ref=1;
+			}
+		}
+		else
+		{
+			$tmp_cigar=~s/\d+M.*//;
+			my $clip_len=0,$clip_seq;
+			if($tmp_cigar=~/S/)
+			{
+				$tmp_cigar=~s/[A-Z]/#/g;
+				$clip_len=sum(split(/#/,$tmp_cigar));
+				$clip_seq=substr($read[9],0,$clip_len);
+
+				$left_map_start[$left_i]=$map_start ;
+				$left_map_end[$left_i]=$map_end;
+				$left_clip_seq[$left_i]=$clip_seq;
+				$left_clip_len[$left_i]=$clip_len;
+				$left_read_i[$left_i]=$i;
+				$left_i++;
+			}
+			else
+			{
+				$match_ref=1;
+			}
+		}
+	}
+	else
+	{
+		$match_ref=1;
+	}
+	if($match_ref==1)
+	{
+		@line=split(/\t/,$_);
+		@line=&clip_insertion(@line);
+		@line=&clip_del(@line);
+		print MPR join("\t",@line)."\n";
+	}
+	$i++;
+}
+my @left_polyAT,$left_polyAT_total=0,$left_polyAT_ratio=0,$polyAT_direction=0;
+my @right_polyAT,$right_polyAT_total=0,$right_polyAT_ratio=0;
+my $left_map_mid=&mid(@left_map_start);
+my $right_map_mid=&mid(@right_map_end);
+for($i=0;$i<@left_clip_seq;$i++)
+{
+	#print "seq:$left_clip_seq[$i]\t".abs($left_map_mid-$left_map_start[$i])."\t$left_read_i[$i]\t".max(@left_clip_len)."\n";
+	if($left_clip_seq[$i]=~/[AT]{7,}/ or (@{[$left_clip_seq[$i]=~m/[^AT]/g]} <= 3 and abs($left_map_mid-$left_map_start[$i])<5))
+	{
+		$left_has_polyAT[$i]=1;
+		$left_poly_AT_total+=@{[$left_clip_seq[$i]=~m/[AT]{7,}/g]};	
+	}	
+	else
+	{
+		$left_has_polyAT[$i]=0;
+	}	
+#	print "$left_clip_seq[$i]\t$left_has_polyAT[$i]\n";
+}	
+for($i=0;$i<@right_clip_seq;$i++)
+{
+	if($right_clip_seq[$i]=~/[AT]{7,}/ or (@{[$right_clip_seq[$i]=~m/[^AT]/g]} <= 3 and abs($right_map_mid-$right_map_end[$i])<5))
+	{
+		$right_has_polyAT[$i]=1;
+		$right_poly_AT_total+=@{[$right_clip_seq[$i]=~m/[AT]{7,}/g]};	
+	}	
+	else
+	{
+		$right_has_polyAT[$i]=0;
+	}	
+#	print "$right_clip_seq[$i]\t$right_has_polyAT[$i]\t".abs($right_map_mid-$right_map_end)."\n";
+}
+
+$left_print=0;
+$right_print=0;
+if($left_poly_AT_total>$right_poly_AT_total and sum(@left_has_polyAT)/@left_clip_seq>0.6)
+{
+	$polyAT_direction=-1;
+	for($i=0;$i<@left_has_polyAT;$i++)
+	{
+		my @tmp_read_ori=split(/\t/,$read_ori[$left_read_i[$i]]);
+		$tmp_read_ori[6]='1';
+		if($tmp_read_ori[2]=~/^chr/)
+		{
+			$tmp_read_ori[6]='chr1';
+		}	
+		$tmp_read_ori[7]=$left_clip_len[$i];
+		if($left_has_polyAT[$i]==1)
+		{
+			print MPCL join("\t",@tmp_read_ori)."\n";
+			$left_print++;
+		}
+		else
+		{
+			@line=&clip_insertion(@tmp_read_ori);
+			@line=&clip_del(@line);
+			print MPR join("\t",@line)."\n";
+		}
+	}
+}
+elsif($left_poly_AT_total<$right_poly_AT_total and sum(@right_has_polyAT)/@right_clip_seq>0.6)
+{
+	$polyAT_direction=1;
+	for($i=0;$i<@right_has_polyAT;$i++)
+	{
+		my @tmp_read_ori=split(/\t/,$read_ori[$right_read_i[$i]]);
+		$tmp_read_ori[6]='2';
+		if($tmp_read_ori[2]=~/^chr/)
+		{
+			$tmp_read_ori[6]='chr2';
+		}	
+		$tmp_read_ori[7]=$right_clip_len[$i];
+		if($right_has_polyAT[$i]==1)
+		{
+			print MPCR join("\t",@tmp_read_ori)."\n";
+			$right_print++;
+		}
+		else
+		{
+			@line=&clip_insertion(@tmp_read_ori);
+			@line=&clip_del(@line);
+			print MPR join("\t",@line)."\n";
+		}
+	}
+}
+
+my @left_map_alu;
+my @right_map_alu;
+my @blastout;
+if($polyAT_direction!=-1)
+{
+	for(my $i=0;$i<@left_clip_seq;$i++)
+	{
+		$left_map_alu[$i]=0;
+	}
+	@blast_out=`cat $out_dir/$ARGV[0].rp_left 2>/dev/null`;
+	my $tmp_seq,@left_map_alu_seq;
+	foreach $i (@blast_out)
+	{
+		push @left_map_alu_seq,$left_clip_seq[$i];
+		$left_map_alu[$i]=1;
+	}	
+	chomp(@left_map_alu_seq);	
+	for(my $i=0;$i<@left_clip_seq;$i++)
+	{
+		my @tmp_read_ori=split(/\t/,$read_ori[$left_read_i[$i]]);
+		$tmp_read_ori[6]='1';
+		if($tmp_read_ori[2]=~/^chr/)
+		{
+			$tmp_read_ori[6]='chr1';
+		}	
+		$tmp_read_ori[7]=$left_clip_len[$i];
+#		print "read:$tmp_read_ori[0]\tleft_start:$left_map_start[$i]\t$left_map_mid\n";
+		if($left_map_alu[$i]==0)
+		{
+#				print abs($right_map_end[$i]-$right_map_mid)."\t".&seq_compare($t_seq,$right_clip_seq[$i],1)."\t".$right_clip_seq[$i]."\t$t_seq\n";
+			if(abs($left_map_start[$i]-$left_map_mid)<5)
+			{
+				$left_map_alu[$i]=1;
+			}
+		}
+		if($left_map_alu[$i]==0)
+		{
+			@line=&clip_insertion(@tmp_read_ori);
+			@line=&clip_del(@line);
+			print MPR join("\t",@line)."\n";
+		}
+		else
+		{
+			print MPCL join("\t",@tmp_read_ori)."\n";
+			$left_print++;
+		}
+	}
+	
+}
+if($polyAT_direction!=1)
+{
+	for(my $i=0;$i<@right_clip_seq;$i++)
+	{
+		$right_map_alu[$i]=0;
+	}
+	@blast_out=`cat $out_dir/$ARGV[0].rp_right 2>/dev/null`;
+	my $tmp_seq,@right_map_alu_seq=();
+	foreach $i (@blast_out)
+	{
+		push @right_map_alu_seq,$right_clip_seq[$i];
+		$right_map_alu[$i]=1;
+	}	
+	chomp(@right_map_alu_seq);
+	for(my $i=0;$i<@right_clip_seq;$i++)
+	{
+		my @tmp_read_ori=split(/\t/,$read_ori[$right_read_i[$i]]);
+		$tmp_read_ori[6]='2';
+		if($tmp_read_ori[2]=~/^chr/)
+		{
+			$tmp_read_ori[6]='chr2';
+		}	
+		$tmp_read_ori[7]=$right_clip_len[$i];
+		if($right_map_alu[$i]==0)
+		{
+#			print abs($right_map_end[$i]-$right_map_mid)."\n";
+			if(abs($right_map_end[$i]-$right_map_mid)<5)
+			{
+				$right_map_alu[$i]=1;
+			}
+		}
+		if($right_map_alu[$i]==0)
+		{
+			@line=&clip_insertion(@tmp_read_ori);
+			@line=&clip_del(@line);
+			print MPR join("\t",@line)."\n";
+		}
+		else
+		{
+			print MPCR join("\t",@tmp_read_ori)."\n";
+			$right_print++;
+		}
+	}
+}
+#print "left:$left_print\tright:$right_print\n";
+
+sub seq_compare
+{
+	my $seq_long=$_[0];
+	my $seq_short=$_[1];
+	my $direction=$_[2];
+	my $compare_len=length($seq_short)/3,$seq_long;
+	if(length($seq_short)<=3)
+	{
+		$compare_len=1;
+	}
+#	print "start\n";
+	for(my $i=0;$i<$compare_len;$i++)
+	{
+		if($direction==-1)
+		{
+			$seq_short_part_r=substr($seq_short,0,length($seq_short)-$i);
+			$seq_short_part_l=substr($seq_short,$i);
+			if($seq_long=~/$seq_short_part_r$/ or $seq_long=~/$seq_short_part_l$/)
+			{
+				#print "left match\n";
+				return 1;
+			}
+		}
+		else
+		{
+			$seq_short_part_r=substr($seq_short,0,length($seq_short)-$i);
+			$seq_short_part_l=substr($seq_short,$i);
+			#print "$seq_short_part_l\t$seq_short_part_r\t$seq_long\n";
+			if($seq_long=~/^$seq_short_part_r/ or $seq_long=~/^$seq_short_part_l/)
+			{
+				print "right match\n";
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+sub mid
+{
+    my @list = sort @_;
+    my $count = @list;
+    if( $count == 0 )
+    {
+        return 0;
+        die "mid:reads is empty ";
+    }   
+    return $list[($count-1)/2];
+}
+
+sub clip_insertion
+{
+	my $cigar_t,my $max_cg ,my $left_len,my $right_len ,my @cigar_len,my $clip_len_read,my $clip_len_ref;
+	(@read)=@_;
+	if($read[5]=~/[^MDSI\d]/)
+	{
+		return @read
+	}
+	$cigar_t=$read[5];
+	$cigar_t=~s/.*?(\d+)I.*/\1/g;
+	if($read[5]=~/I/ and $cigar_t>5)
+	{
+		$max_cg=&maxCigar($read[5],'I');
+#		print "$read[5]\t$read[9]\n";
+		$cigar_t=$read[5];
+		$cigar_t=~s/${max_cg}I.*//;
+		$left_len=&mapLen($cigar_t);
+
+		$cigar_t=$read[5];
+		$cigar_t=~s/.*?${max_cg}I//;
+		$right_len=&mapLen($cigar_t);
+		
+		if($left_len>=$right_len)
+		{
+			$read[5]=~s/(${max_cg})I(.*)/\1S/;
+			$cigar_t=$read[5];
+			$cigar_t=~s/\d+D//g;
+			$cigar_t=~s/[A-Z]/\t/g;
+			@cigar_len=split(/\t/,$cigar_t);
+			$clip_len_read=sum(@cigar_len);
+			$read[9]=substr($read[9],0,$clip_len_read);
+			$read[10]=substr($read[10],0,$clip_len_read);
+		}	
+		else
+		{
+			$read[5]=~s/(.*?)($max_cg)I/\2S/;
+			$cigar_t=$1;
+			$cigar_t=~s/(\d+[DM])/\t\1/g;
+			$cigar_t=~s/\t(\d+)[DM].*?\t?/\1\t/g;
+			$cigar_t=~s/\t$//g;
+			@cigar_len=split(/\t/,$cigar_t);
+			$clip_len_ref=sum(@cigar_len);
+			$read[3]=$read[3]+$clip_len_ref;
+
+			$cigar_t=$read[5];
+			$cigar_t=~s/\d+D//g;
+			$cigar_t=~s/[A-Z]/\t/g;
+			@cigar_len=split(/\t/,$cigar_t);
+			$clip_len_read=sum(@cigar_len)*(-1);
+			$read[9]=substr($read[9],$clip_len_read,);
+			$read[10]=substr($read[10],$clip_len_read,);
+		}
+#		print "$read[5]\t$read[9]\n";
+	}
+	return @read
+}
+
+sub clip_del
+{
+	my $cigar_t,my $max_cg ,my $left_len,my $right_len ,my @cigar_len,my $clip_len_read,my $clip_len_ref;
+	(@read)=@_;
+	if($read[5]=~/[^MDSI\d]/)
+	{
+		return @read
+	}
+	$cigar_t=$read[5];
+	$cigar_t=~s/.*?(\d+)D.*/\1/g;
+	if($read[5]=~/D/ and $cigar_t>5)
+	{
+		$max_cg=&maxCigar($read[5],'D');
+#		print "0###$read[3]\t$read[5]\t$max_cg\n";
+		$cigar_t=$read[5];
+		$cigar_t=~s/${max_cg}D.*//;
+		$left_len=&mapLen($cigar_t);
+
+		$cigar_t=$read[5];
+		$cigar_t=~s/.*?${max_cg}D//;
+		$right_len=&mapLen($cigar_t);
+#		print "left_len:$left_len\tright_len:$right_len\n";	
+		if($left_len>=$right_len)
+		{
+			$read[5]=~s/(${max_cg})D(.*)/\1S/;
+			$cigar_t=$read[5];
+#			$cigar_t=~s/\d+S$//;
+			$cigar_t=~s/\d+D//g;
+			$cigar_t=~s/[A-Z]/\t/g;
+			@cigar_len=split(/\t/,$cigar_t);
+			$clip_len_read=sum(@cigar_len);
+			if($clip_len_read>length($read[9]))
+			{
+                                my $extra_len=$clip_len_read-length($read[9]);
+                                $max_cg_t=$max_cg-$extra_len;
+                                $read[5]=~s/${max_cg}S$/${max_cg_t}S/;
+                                $clip_len_read=length($read[9]);
+			}
+			$read[9]=substr($read[9],0,$clip_len_read);
+			$read[10]=substr($read[10],0,$clip_len_read);
+			#print "1###$clip_len_read  max_cg:$max_cg \n";
+		}	
+		else
+		{
+			$read[5]=~s/(.*?)(${max_cg})D/\2S/;
+			$clip_len_ref=$2;
+			$cigar_t=$1;
+			$cigar_t_2=$1;
+			$cigar_t=~s/(\d+[DM])/\t\1/g;
+			$cigar_t=~s/\t(\d+)[DM].*?\t?/\1\t/g;
+			$cigar_t=~s/\t$//g;
+			@cigar_len=split(/\t/,$cigar_t);
+			$clip_len_ref+=sum(@cigar_len);
+			$read[3]=$read[3]+$clip_len_ref;
+			
+			$cigar_t=$read[5];
+#			$cigar_t=~s/\d+S//;
+			$cigar_t=~s/\d+D//g;
+			$cigar_t=~s/[A-Z]/\t/g;
+			@cigar_len=split(/\t/,$cigar_t);
+			$clip_len_read=sum(@cigar_len)*(-1);
+			if($clip_len_read*(-1)>length($read[9]))
+			{
+                                my $extra_len=(-1)*$clip_len_read-length($read[9]);
+                                $max_cg_t=$max_cg-$extra_len;
+                                $read[5]=~s/^${max_cg}S/${max_cg_t}S/;
+                                $clip_len_read=-1*length($read[9]);
+			}
+#			print "1###$clip_len_read\n";
+			$read[9]=substr($read[9],$clip_len_read,);
+			$read[10]=substr($read[10],$clip_len_read,);
+		}
+#		print "$read[3]\t$read[5]\n";
+	}
+	return @read
+}
+sub maxCigar
+{
+	(my $cigar,my $find_c)=@_;
+	my @cigars;
+	$cigar=~s/(\d+$find_c)/\1\t/g;
+	$cigar=~s/\t$//;
+	@cigars=split(/\t/,$cigar);
+	for(my $i=0;$i<@cigars;$i++)
+	{
+		unless($cigars[$i]=~/$find_c/)
+		{
+			$cigars[$i]="";
+		}
+		$cigars[$i]=~s/.*?(\d+)$find_c/\1/;
+	}
+	return max(@cigars)
+}
+sub mapLen
+{
+	(my $cigar_t)=@_;
+	my  @cigar_len;
+	$cigar_t=~s/([A-Z])/\1\t/g;
+	@cigar_len=split(/\t/,$cigar_t);
+	for(my $i=0;$i<@cigar_len;$i++)
+	{
+		unless($cigar_len[$i]=~/M/)
+		{
+			$cigar_len[$i]=0;	
+		}
+	}
+	return sum(@cigar_len)
+}	
+#while(<STDIN>)
+#{
+#	chomp();
+#	@line=split(/\t/,$_);
+#	@line=&clip_insertion(@line);
+##	@line=&clip_del(@line);
+#	print join("\t",@line)."\n";
+#
+#}

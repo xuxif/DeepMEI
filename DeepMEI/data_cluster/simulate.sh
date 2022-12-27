@@ -1,0 +1,2 @@
+ cat output.pgd |grep -v "#"|cut -d' ' -f1|perl -alne '$end=$F[0]+15;$start=$F[0]-15;print "1:$start\-$end"' |while read region;do samtools view sample_1.dedup.bam "$region" -O bam -o regions/${region}.bam;echo $region;done 
+cat output.pgd |grep -v "#"|cut -d' ' -f1,2,3|perl -npe "s/ /\t/g"|perl -npe "s/^/1\t/"|perl -F'\t' -alne '$region="1:$F[0]:$F[1]";if($F[2]!="*" and $F[3]!="*") { print "$_\t2";} elsif($F[2]=="*" and $F[3]=="*") { print "$_\t0";}else { print "$_\t1";}' >output.pga
