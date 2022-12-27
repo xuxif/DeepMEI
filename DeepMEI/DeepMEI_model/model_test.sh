@@ -1,7 +1,7 @@
-bam_file=/DeepAlu/HG002_bwa_sort.bam
-input_gt=/DeepAlu/final_vcf/all_tool_igv_chekck.bed
+bam_file=/DeepMEI/HG002_bwa_sort.bam
+input_gt=/DeepMEI/final_vcf/all_tool_igv_chekck.bed
 output=allTool
-cd /DeepAlu/data_cluster/
+cd /DeepMEI/data_cluster/
 cp  $input_gt input_gt.txt
 bash  order_RE.sh $bam_file
 cd -

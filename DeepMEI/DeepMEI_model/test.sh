@@ -1,11 +1,6 @@
-multi_process=`ls multi_process/|wc -l`
-while [[ $multi_process -ge 5 ]]
-do
-        multi_process=`ls multi_process/|wc -l`
-        sleep 10
-done
-a=2
-if [[ ! -f "test.sha"  ]]
+input_bai="test.sh"
+if [[ ! -f "${input_bai}.sh" ]]  && [[ ! -f $input_bai ]]
 then
-	echo "yes"
+	echo "not existed!"
 fi
+
