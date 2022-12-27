@@ -1,7 +1,7 @@
 sample='HG002'
 file='/root/HG002.sort.bam'
 file='/mnt/disk2/GIAB/AshkenazimTrio/HG002.hs37d5.60x.1.bam'
-vcf=/home/xuxf/DeepAlu/final_vcf/true_new.vcf 
+vcf=/home/xuxf/DeepMEI/final_vcf/true_new.vcf 
 rm -rf regions regions_${sample}_combine
 mkdir regions_${sample}_combine
 #wget -c ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/HG002_NA24385_son/NIST_HiSeq_HG002_Homogeneity-10953946/NHGRI_Illumina300X_AJtrio_novoalign_bams/HG002.hs37d5.60x.1.bam -O HG002.hs37d5.60x.1.bam

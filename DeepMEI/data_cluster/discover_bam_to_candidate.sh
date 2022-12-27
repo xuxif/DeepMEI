@@ -1,7 +1,7 @@
 input_file=$1
 output=$2
 BWA=bwa
-ME_reference=/DeepAlu/DeepAlu_model/reference/ALU.fa
+ME_reference=/DeepMEI/DeepMEI_model/reference/ALU.fa
 threads=20
 split_len=15
 extractSC=SE-MEI/extractSoftclipped

@@ -15,7 +15,7 @@ samtools view -T $REF -H $bam_file  >head_$ran_num.sam
 
 #sample='HG002';cat $input_gt|perl -F'\t' -alne '$start=$F[1]-50;$start2=$F[1]-100;;$end=$F[1]+50;$end2=$F[1]+100;print "$F[0]:$start-$end\t$F[4]";' |xargs -n 2 -I{} -P 40 perl alu_discord_support_part2_sample_refine.pl {} $ran_num $bam_file $REF >../DeepAlu_script/vsoft_pos/${ran_num}_vsoft.bed
 #sample='HG002';cat $input_gt|perl -F'\t' -alne '$start=$F[1]-50;$start2=$F[1]-100;;$end=$F[1]+50;$end2=$F[1]+100;print "$F[0]:$start-$end";' |xargs -n 1 -P 20 -I record bash extract_region_sample.sh record $bam_file $sample regions_$ran_num $REF
-sample='HG002';cat $input_gt|perl -F'\t' -alne '$start=$F[1]-50;$start2=$F[1]-100;;$end=$F[1]+50;$end2=$F[1]+100;print "$F[0]:$start-$end\t$F[4]";' |xargs -n 2 -I{} -P 40 perl alu_discord_support_part2_sample_refine_vt.pl {} $ran_num $bam_file $REF >../DeepAlu_script/vsoft_pos/${ran_num}_vsoft.bed #${ran_num}_vsoft.bed
+sample='HG002';cat $input_gt|perl -F'\t' -alne '$start=$F[1]-50;$start2=$F[1]-100;;$end=$F[1]+50;$end2=$F[1]+100;print "$F[0]:$start-$end\t$F[4]";' |xargs -n 2 -I{} -P 40 perl alu_discord_support_part2_sample_refine_vt.pl {} $ran_num $bam_file $REF >../DeepMEI_script/vsoft_pos/${ran_num}_vsoft.bed #${ran_num}_vsoft.bed
 echo "generate record finished!"
 
 #ls regions_$ran_num |xargs -n 1 -I {} -P 40 bash discover_bam_to_candidate_sample.sh {} $ran_num $ME_REF
