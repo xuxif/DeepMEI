@@ -137,7 +137,7 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
       pad_range=[20,21,19,22,18,23]
       print('quick mode starting ...')
     for padding in pad_range:
-      print('padd:'+str(padding))
+#      print('padd:'+str(padding))
       t=len(features_pad)
       test_dataset = tf.data.Dataset.from_tensor_slices((features_pad[:,:,padding:(351+padding),:], np.array([0]*t))).batch(batch_size=128)
 #      print('new image generate finished')

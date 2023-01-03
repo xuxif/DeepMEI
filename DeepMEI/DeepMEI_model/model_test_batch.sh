@@ -155,6 +155,10 @@ do
 done
 echo "$output" >multi_process/${output}.txt
 
+if [[ ! -f "weights/val_best_model/variables/variables.data-00000-of-00001" ]]
+then
+	cat weights/val_best_model/variables/variables.data-00000-of-00001a* >weights/val_best_model/variables/variables.data-00000-of-00001
+fi
 python model_test_refine.py -i $input_gt -o ${base}/DeepMEI/DeepMEI_model/batch_cdgc/deepmei_${output}_predict.txt -s ${base}/DeepMEI/data_cluster/split_softclipped_sort_$ran_num -r $REF  -q $quick_model -t $threshold_model
 
 rm multi_process/${output}.txt
