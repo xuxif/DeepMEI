@@ -37,7 +37,6 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 5. Conda install samtools, bedtools, BWA and RepeatMasker
  
  ```
-  conda activate deepmei
   conda install samtools bedtools  bwa -y
   conda install repeatmasker -y
   ```
