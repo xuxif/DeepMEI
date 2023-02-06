@@ -32,7 +32,7 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 4. Pip install pysam 
 
 ```
-  pip install pysam=0.17.0
+  pip install pysam==0.17.0
  ```
 5. Conda install samtools, bedtools, BWA and RepeatMasker
  
