@@ -19,7 +19,7 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 2. Create a new conda environment 
  
  ```
-  conda env create -n deepmei  
+  conda env create -n deepmei 
   conda activate deepmei
  ```
  <br />
