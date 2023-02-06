@@ -13,7 +13,8 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 6. Tensorflow v2.7.0<br />
 7. python 3.8<br />
 8. perl v5.32.1<br />
-9. Anaconda (optinal)<br />
+9. bc <br />
+11. Anaconda (optinal)<br />
 ### Recommended Environment Configuration Steps
 1. Insatll Anaconda in your server.
 2. Create a new conda environment 
