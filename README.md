@@ -11,10 +11,11 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 4. BWA<br />
 5. RepeatMasker<br />
 6. Tensorflow v2.7.0<br />
-7. python 3.8<br />
+7. python 3.8 or 3.9 (Versions above python3.10 may encounter compatibility issues, such as the inability to install tensorflow 2.7.0 correctly）<br />
 8. perl v5.32.1<br />
 9. bc <br />
-11. Anaconda (optinal)<br />
+11. Anaconda <br />
+12. xarg v4.5 (v4.8 will prompt parameter conflict）
 ### Recommended Environment Configuration Steps
 1. Insatll Anaconda in your server (Not Miniconda which met errors).
 2. Create a new conda environment 
