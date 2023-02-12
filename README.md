@@ -16,7 +16,7 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 9. bc <br />
 11. Anaconda (optinal)<br />
 ### Recommended Environment Configuration Steps
-1. Insatll Anaconda in your server.
+1. Insatll Anaconda in your server (Not Miniconda which met errors).
 2. Create a new conda environment 
  
  ```
