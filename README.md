@@ -30,10 +30,10 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 ```
    conda install -c conda-forge tensorflow=2.7.0
  ```
- Or
+   Or
  ```
-  pip install tensorflow==2.7.0
-  pip install protobuf==3.20.* 
+   pip install tensorflow==2.7.0
+   pip install protobuf==3.20.* 
  ```
 4. Pip install pysam 
 
