@@ -5,6 +5,7 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 <br/>
 ##
 ## Docker: <br />
+Pull docker image from dockerhub
 ```
   sudo docker pull xuxiaofeiscu/deepmei:v1.6.1
 ```
