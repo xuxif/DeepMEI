@@ -8,7 +8,7 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 ```
   sudo docker pull xuxiaofeiscu/deepmei:v1.6.1
   (GRCh38) sudo docker run -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data -w /root/  xuxiaofeiscu/deepmei:v1.6.1 /bin/bash DeepMEI/DeepMEI_model/model_test_batch.sh -i data/you_bam_file.bam -r DeepMEI/DeepMEI_model/reference/Homo_sapiens_assembly38.fasta -w /root/data
-  (hs37d5) sudo docker run -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data -w /root/  xuxiaofeiscu/deepmei:v1.6.1 /bin/bash DeepMEI/DeepMEI_model/model_test_batch.sh -i data/you_bam_file.bam -r DeepMEI/DeepMEI_model/reference/Homo_sapiens_assembly38.fasta -w /root/data
+  (hs37d5) sudo docker run -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data -w /root/  xuxiaofeiscu/deepmei:v1.6.1 /bin/bash DeepMEI/DeepMEI_model/model_test_batch.sh -i data/you_bam_file.bam -r DeepMEI/DeepMEI_model/reference/hs37d5.fa -w /root/data
 
 ```
 ## Software version requirements (without docker): <br />
