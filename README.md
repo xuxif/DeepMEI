@@ -4,8 +4,21 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 ![This is an image](https://github.com/xuxif/DeepMEI/blob/main/workflow.png)
 <br/>
 ##
-## Software version requirements : <br />
-1. samtools 1.15.1<br />
+## Docker: <br />
+Pull docker image from dockerhub
+```
+  sudo docker pull xuxiaofeiscu/deepmei:v1.6.1
+```
+  GRCh38:
+```
+  sudo docker run -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data -w /root/  xuxiaofeiscu/deepmei:v1.6.1 /bin/bash DeepMEI/DeepMEI_model/model_test_batch.sh -i data/you_bam_file.bam -r DeepMEI/DeepMEI_model/reference/Homo_sapiens_assembly38.fasta -w /root/data
+```
+  hs37d5, hg19 or GRCh37:
+```
+  sudo docker run -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data -w /root/  xuxiaofeiscu/deepmei:v1.6.1 /bin/bash DeepMEI/DeepMEI_model/model_test_batch.sh -i data/you_bam_file.bam -r DeepMEI/DeepMEI_model/reference/hs37d5.fa -w /root/data
+```
+## Software version requirements (without docker): <br />
+1. samtools 1.15.1 (Other versions need to test whether the "samtools coverage" function is included)<br />
 2. bedtools v2.30.0<br />
 3. pysam 0.17.0<br />
 4. BWA<br />

@@ -26,19 +26,19 @@ foreach $read (@reads)
 		$match_len=0;
 		for($i=0;$i<@cigar;$i=$i+2)
 		{
-			if(($cigar[$i+1] eq 'I') and $cigar[$i] >8 and ($read_detail[3]+$match_len)<$end and  ($read_detail[3]+$match_len)>$start)
+			if(($cigar[$i+1] eq 'I') and $cigar[$i] >4 and ($read_detail[3]+$match_len)<$end+5 and  ($read_detail[3]+$match_len)>$start-5)
 			{
 				#				print (($read_detail[3]+$match_len)-($start+$end)/2);
 				#				print "\n";
 				$indel_read_count++
 			}
-			if(($cigar[$i+1] eq 'D') and $cigar[$i] >5 and ($read_detail[3]+$match_len)<=$end and  ($read_detail[3]+$match_len)>=$start)
+			if(($cigar[$i+1] eq 'D') and $cigar[$i] >4 and ($read_detail[3]+$match_len)<$end+5 and  ($read_detail[3]+$match_len)>$start-5)
 			{
 				#print (($read_detail[3]+$match_len)-($start+$end)/2);
 				#print "\n";
 				$indel_read_count++
 			}
-			if(($cigar[$i+1] eq 'D') and $cigar[$i] >5 and ($read_detail[3]+$match_len+$cigar[$i])<=$end and  ($read_detail[3]+$match_len+$cigar[$i])>=$start)
+			if(($cigar[$i+1] eq 'D') and $cigar[$i] >4 and ($read_detail[3]+$match_len+$cigar[$i])<$end+5 and  ($read_detail[3]+$match_len+$cigar[$i])>$start-5)
 			{
 				#print (($read_detail[3]+$match_len)-($start+$end)/2);
 				#print "\n";

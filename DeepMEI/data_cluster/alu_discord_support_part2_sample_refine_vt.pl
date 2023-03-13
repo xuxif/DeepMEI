@@ -5,6 +5,8 @@ $ran_num=$ARGV[1];
 $ori_dir="regions_$ran_num";
 $dir="alu_sam";
 $out_dir="split_softclipped_$ran_num";
+$right_poly_AT_total=0;
+$left_poly_AT_total=0;
 if(not -e $out_dir)
 {
 	`mkdir $out_dir`;
@@ -15,11 +17,21 @@ $me_type=$ARGV[0];
 $me_type=~s/.*[ \t]+//;
 $bam_file="$ARGV[2]";
 $REF="$ARGV[3]";
+$step="$ARGV[4]";
 my @group_ref,@group_left,@group_right;
 #open(MPCHL,">>${out_dir}/$ARGV[0]_mapClipHL.sam");
 #open(MPCHR,">>${out_dir}/$ARGV[0]_mapClipHR.sam");
-
-@ori=`samtools view -T $REF $bam_file $record |head --lines=200`;
+if($step == 1)
+{
+#	@ori=`samtools view -T $REF $bam_file $record |head --lines=200 `;
+	@ori=`cat regions_$ran_num/HG002_${record}.sam |head --lines=200 `;
+}
+elsif($step ==2)
+{
+#	@ori=`samtools view -T $REF $bam_file $record |head --lines=200 |perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
+	@ori=`cat regions_$ran_num/HG002_${record}.sam |head --lines=200 |perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
+}
+#@ori=`samtools view -T $REF $bam_file $record |head --lines=200 `; #|perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
 my @read_ori;
 my @left_map_start ,@left_map_end,@left_clip_seq,@left_clip_len,@left_read_i,@left_hard_read_i;
 my @right_map_start ,@right_map_end,@right_clip_seq,@right_clip_len,@right_read_i,@right_hard_read_i;
@@ -74,13 +86,13 @@ foreach (@ori)
 			$tmp_cigar=~s/.*M//;
 			my $clip_len=0,$clip_seq;
 			$clip_len=$tmp_cigar;
-			$clip_len=~s/(\d+)S/\1/;
+			$clip_len=~s/.*?(\d+)S/\1/;
 			if($tmp_cigar=~/S/)
 			{
 				$tmp_cigar=~s/[A-Z]/#/g;
 				$clip_len=~s/.*?(\d+)S.*/\1/;
 				$clip_seq=substr($read[9],-$clip_len);
-
+				$clip_len_ran=int(rand(50));
 				if($clip_len>50) 
 				{
 					$read[5]=~s/(\d+)S$/50S/;
@@ -113,6 +125,7 @@ foreach (@ori)
 				#$clip_len=sum(split(/#/,$tmp_cigar));
 				$clip_len=~s/.*?(\d+)S.*/\1/;
 				$clip_seq=substr($read[9],0,$clip_len);
+				$clip_len_ran=int(rand(50));
 				if($clip_len>50) 
 				{
 					$read[5]=~s/^(\d+)S/50S/;
@@ -182,8 +195,6 @@ my @left_polyAT,$left_polyAT_total=0,$left_polyAT_ratio=0,$polyAT_direction=0;
 my @right_polyAT,$right_polyAT_total=0,$right_polyAT_ratio=0;
 my $left_map_mid=&mid(@left_map_start);
 my $right_map_mid=&mid(@right_map_end);
-open(BPINF,">${out_dir}/HG002_${record}_BPinfo.txt");
-print BPINF "$record\t$left_map_mid\t$right_map_mid\t";
 my $hard_part2_seq='';
 
 my @right_clip_len_t=@right_clip_len;
@@ -308,7 +319,7 @@ $left_print=0;
 $right_print=0;
 @group_left_clip;
 @group_right_clip;
-if($left_poly_AT_total>$right_poly_AT_total and sum(@left_has_polyAT)/@left_clip_seq>0.6)
+if($left_poly_AT_total>$right_poly_AT_total and sum(@left_has_polyAT)/($#left_clip_seq+1)>0.6)
 {
 	$polyAT_direction=-1;
 	for($i=0;$i<@left_has_polyAT;$i++)
@@ -336,7 +347,7 @@ if($left_poly_AT_total>$right_poly_AT_total and sum(@left_has_polyAT)/@left_clip
 		}
 	}
 }
-elsif($left_poly_AT_total<$right_poly_AT_total and sum(@right_has_polyAT)/@right_clip_seq>0.6)
+elsif($left_poly_AT_total<$right_poly_AT_total and sum(@right_has_polyAT)/($#right_clip_seq+1)>0.6)
 {
 	$polyAT_direction=1;
 	for($i=0;$i<@right_has_polyAT;$i++)
@@ -510,6 +521,8 @@ else
 my $tsd_len=$right_map_mid-$left_map_mid;
 if($tsd_len>=-20 and  $tsd_len<=70 and $clipL_chrom>=2 and $clipR_chrom>=2 and $clip_both<0.3)
 {
+	open(BPINF,">${out_dir}/HG002_${record}_BPinfo.txt");
+	print BPINF "$record\t$left_map_mid\t$right_map_mid\t";
 	#	`cat head_$ran_num.sam >${out_dir}/HG002_${record}_mapRef.sam`;
 	#`cat head_$ran_num.sam >${out_dir}/HG002_${record}_mapClipR.sam`;
 	#`cat head_$ran_num.sam >${out_dir}/HG002_${record}_mapClipL.sam`;
@@ -538,23 +551,53 @@ if($tsd_len>=-20 and  $tsd_len<=70 and $clipL_chrom>=2 and $clipR_chrom>=2 and $
     	print "$record_split[0]\t".int(($record_split[1]+$record_split[2])/2)."\t0\tHG002\t$me_type\n";#$iden_sum_left\t$iden_sum_right\n";
     	foreach $read_i (@group_ref)
     	{
-    		print MPR $read_i."\n";
+		@F=split(/\t/,$read_i);
+		if($F[5] ne '*' and $F[4] == 0 )
+		{
+#			$F[4]=60;
+		}
+		print MPR join("\t",@F);
+		print MPR "\n";
     	}
+	$i=0;
     	foreach $read_i (@group_left)
     	{
-    		print MPCL $read_i."\n";
+		$i++;
+		@F=split(/\t/,$read_i);
+		if($F[5] ne '*' and $F[4] == 0 )
+		{
+#			$F[4]=60;
+		}
+		print MPCL join("\t",@F);
+		print MPCL "\n";
+		if($i>15)
+		{
+			last;
+		}
     	}
+	$i=0;
     	foreach $read_i (@group_right)
     	{
-    		print MPCR $read_i."\n";
+		$i++;
+		@F=split(/\t/,$read_i);
+		if($F[5] ne '*' and $F[4] == 0 )
+		{
+#			$F[4]=60;
+		}
+		print MPCR join("\t",@F);
+		print MPCR "\n";
+		if($i>15)
+		{
+			last;
+		}
     	}
     	close(MPCR);
     	close(MPCL);
     	close(MPR);
 	}
+	print BPINF "$tsd_len\t$clipL_chrom\t$clipR_chrom\t$clip_both\t$left_hard_supp_count\t$right_hard_supp_count\t$polyAT_direction\n";
+	close(BPINF);
 }
-print BPINF "$tsd_len\t$clipL_chrom\t$clipR_chrom\t$clip_both\t$left_hard_supp_count\t$right_hard_supp_count\t$polyAT_direction\n";
-close(BPINF);
 #print "left:$left_print\tright:$right_print\n";
 sub clip_seq_iden
 {

@@ -11,11 +11,12 @@ BWA=bwa
 ME_REF=$2
 output=$3
 REF=$4
+ME_bed=$5
 threads=20
 split_len=15
-if [[ -n "$5" ]]
+if [[ -n "$6" ]]
 then
-	split_len=$5
+	split_len=$6
 	output=$output"_$split_len"
 	echo "split_len:$split_len"
 	echo "output:$output"

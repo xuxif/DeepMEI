@@ -145,9 +145,11 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
       pad_each_i=0
       pad_i=[]
       for predict_pad_each,record_pad_each in zip(predict_pad,record_use_select):
-        if (predict_pad_each[1]+predict_pad_each[2]) >=1 or -10*math.log10(1-predict_pad_each[1]-predict_pad_each[2]) > float(threshold_score) or 0.6<predict_pad_each[0]:
+        if (predict_pad_each[1]+predict_pad_each[2]) >=1 or -10*math.log10(1-predict_pad_each[1]-predict_pad_each[2]) > float(threshold_score):
           predict.append(predict_pad_each)
           record.append(record_pad_each)
+          pad_i.append(pad_each_i)
+        if 0.6<predict_pad_each[0]:
           pad_i.append(pad_each_i)
         pad_each_i=pad_each_i+1
       features_pad=np.delete(features_pad,pad_i,0)
