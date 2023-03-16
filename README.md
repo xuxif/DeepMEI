@@ -7,15 +7,15 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 ## Docker: <br />
 Pull docker image from dockerhub
 ```
-  sudo docker pull xuxiaofeiscu/deepmei:v1.6.1
+  sudo docker pull xuxiaofeiscu/deepmei:v1.6.3
 ```
   GRCh38:
 ```
-  sudo docker run -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data -w /root/  xuxiaofeiscu/deepmei:v1.6.1 /bin/bash DeepMEI/DeepMEI_model/model_test_batch.sh -i data/you_bam_file.bam -r DeepMEI/DeepMEI_model/reference/Homo_sapiens_assembly38.fasta -w /data/
+  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:v1.6.3  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i -i data/you_bam_file.bam  -r 38 -w /data/
 ```
   hs37d5, hg19 or GRCh37:
 ```
-  sudo docker run -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data -w /root/  xuxiaofeiscu/deepmei:v1.6.1 /bin/bash DeepMEI/DeepMEI_model/model_test_batch.sh -i data/you_bam_file.bam -r DeepMEI/DeepMEI_model/reference/hs37d5.fa -w /data/
+  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:v1.6.3  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i -i data/you_bam_file.bam  -r 19 -w /data/
 ```
 ## Software version requirements (without docker): <br />
 1. samtools 1.15.1 (Other versions need to test whether the "samtools coverage" function is included)<br />
