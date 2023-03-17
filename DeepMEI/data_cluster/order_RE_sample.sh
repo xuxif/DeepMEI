@@ -16,8 +16,7 @@ samtools view -T $REF -H $bam_file  >head_$ran_num.sam
 cd regions_$ran_num
 
 sort -k1,1 -k2,2n $input_gt >input_sort.bed
-num=`cat input_sort.bed |wc -l|perl -F'\t' -alne '$num=int($F[0]/2);print "$num";'`
-paste -d'\n' <(head -n $num input_sort.bed ) <(tail -n $num input_sort.bed ) |split -l 10000 /dev/stdin shuff_split_candidate
+cat input_sort.bed |perl -F'\t' -alne '$i++;print "$i\t$_";if($i==100){$i=0;}' |while read id info;do echo "$info" >>shuff_split_candidate$id ;done
 
 #ls split_candidate*|while read file;do  num=`cat $file|wc -l|perl -F'\t' -alne '$num=int($F[0]/2);print "$num";'`;paste -d'\n' <(sort -k1,1 -k2,2n $file|head -n $num ) <(sort -k1,1 -k2,2n $file|tail -n $num ) |head -n `cat $file|wc -l` >shuff_$file;done
 ls shuff_split_candidate*|xargs -n 1 -P 20 -I{} bash ../extrac_region_batch.sh $bam_file $REF {}

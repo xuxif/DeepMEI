@@ -15,7 +15,7 @@ ls |grep "mapRef"|cut -d'_' -f2|xargs -n 1 -I{} -P 20 bash ../indel_size_filter.
 
 ls |grep "mapRef"|perl -npe "s/_mapRef.*//"|xargs -n 1 -P 20 -I{} bash ../../Joint_call/filter_before_cnn_re.sh $ran_num {} $bam_file $REF &
 
-../../DeepMEI_script/SE-MEI/extractSoftclipped -l 15 <(cat <(samtools view -H ~/ssd_2/HG002_bwa_sort.bam) <(cat *_mapClip*.sam |grep -v "^@") ) |samtools import  /dev/stdin |samtools fasta |cut -d'|' -f1,4,9 |perl -npe "s/(>.*)\n/\1\t/"|perl -F'\t' -alne '$len=length($F[1]);print "$_\t$len";'|sort -k1,1 -k3,3nr |uniq |perl -F'\t' -alne 'if($last=~/$F[1]/) {} else { print "$F[0]\n$F[1]";} $last=$F[1];'  >tmp_clip.fa
+../../DeepMEI_script/SE-MEI/extractSoftclipped -l 15 <(cat <(samtools view -H $bam_file ) <(cat *_mapClip*.sam |grep -v "^@") ) |samtools import  /dev/stdin |samtools fasta |cut -d'|' -f1,4,9 |perl -npe "s/(>.*)\n/\1\t/"|perl -F'\t' -alne '$len=length($F[1]);print "$_\t$len";'|sort -k1,1 -k3,3nr |uniq |perl -F'\t' -alne 'if($last=~/$F[1]/) {} else { print "$F[0]\n$F[1]";} $last=$F[1];'  >tmp_clip.fa
 
 wait
 cat *_discordant.fa >>tmp_clip.fa
