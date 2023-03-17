@@ -9,6 +9,11 @@ Pull docker image from dockerhub
 ```
   sudo docker pull xuxiaofeiscu/deepmei:v1.6.4
 ```
+To reference your bam/cram file (along with its bai/crai index) located in /home/ubuntu/bam/input.bam, please follow these steps:
+
+    Replace the placeholder 'Bind_mount_a_volume_to_include_input_bam_file' with the directory path '/home/ubuntu/bam/' in your command or configuration file.
+    Replace the placeholder 'your_bam_file.bam' with the actual file name 'input.bam'.
+    <br />
   GRCh38:
 ```
   sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:v1.6.4  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i -i data/you_bam_file.bam  -r 38 -w /data/'
