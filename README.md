@@ -5,20 +5,21 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 <br/>
 ##
 ## Docker: <br />
+We highly recommend using the Docker version of DeepMEI as it eliminates the need for server configuration and dependency management. Our team updates the Docker version frequently to reduce hardware requirements. With version v1.6.6, DeepMEI can run smoothly on a personal computer with 16GB memory, I7 12700 CPU, and a 128GB SSD, analyzing 30x WGS sequence data of HG01529.final.cram from 1kGP phase 4 in just 30 minutes. If you require faster analysis, please let us know. In a bare metal with 32GB memory and 64 threads (16 cores), DeepMEI (for server) completes the same analysis in just 22 minutes.
 Pull docker image from dockerhub
 ```
-  sudo docker pull xuxiaofeiscu/deepmei:v1.6.4
+  sudo docker pull xuxiaofeiscu/deepmei:v1.6.6
 ```
 ### To reference your bam/cram file (along with its bai/crai index) located in /home/ubuntu/bam/input.bam, please follow these steps:<br /><br />
 1. Replace the placeholder 'Bind_mount_a_volume_to_include_input_bam_file' with the directory path '/home/ubuntu/bam/' in your command.
 2. Replace the placeholder 'your_bam_file.bam' with the actual file name 'input.bam'.
   GRCh38:
 ```
-  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:v1.6.4  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i -i data/you_bam_file.bam  -r 38 -w /data/'
+  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:v1.6.6  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i /root/data/you_bam_file.bam  -r 38 -w /root/data/'
 ```
   hs37d5, hg19 or GRCh37:
 ```
-  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:v1.6.4  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i -i data/you_bam_file.bam  -r 19 -w /data/'
+  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:v1.6.6  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i /root/data/you_bam_file.bam  -r 19 -w /root/data/'
 ```
 ## Software version requirements (without docker): <br />
 1. samtools 1.15.1 (Other versions need to test whether the "samtools coverage" function is included)<br />
