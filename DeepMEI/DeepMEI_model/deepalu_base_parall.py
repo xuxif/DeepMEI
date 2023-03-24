@@ -162,9 +162,9 @@ class DV_call:
     self.break_pos=str(chr)+":"+str(pos)
     self.image_start_pos=int(pos)-196
 #    print(str(sample)+'_'+str(chr)+":"+str(int(pos)-50)+"-"+str(int(pos)+50)+"_mapClipR.sam")
-    self.reads_mapRef=pysam.AlignmentFile(options_.split_softclipped+'/'+str(sample)+'_'+str(chr)+":"+str(int(pos)-50)+"-"+str(int(pos)+50)+"_mapRef.sam", "rb",check_sq=False)
-    self.reads_mapClipL=pysam.AlignmentFile(options_.split_softclipped+'/'+str(sample)+'_'+str(chr)+":"+str(int(pos)-50)+"-"+str(int(pos)+50)+"_mapClipL.sam", "rb",check_sq=False)
-    self.reads_mapClipR=pysam.AlignmentFile(options_.split_softclipped+'/'+str(sample)+'_'+str(chr)+":"+str(int(pos)-50)+"-"+str(int(pos)+50)+"_mapClipR.sam", "rb",check_sq=False)
+    self.reads_mapRef=pysam.AlignmentFile(options_.split_softclipped+'/'+str(sample)+'_'+str(chr)+":"+str(int(pos)-50)+"-"+str(int(pos)+50)+"_mapRef.sam", "rb",check_sq=False,check_header=False)
+    self.reads_mapClipL=pysam.AlignmentFile(options_.split_softclipped+'/'+str(sample)+'_'+str(chr)+":"+str(int(pos)-50)+"-"+str(int(pos)+50)+"_mapClipL.sam", "rb",check_sq=False,check_header=False)
+    self.reads_mapClipR=pysam.AlignmentFile(options_.split_softclipped+'/'+str(sample)+'_'+str(chr)+":"+str(int(pos)-50)+"-"+str(int(pos)+50)+"_mapClipR.sam", "rb",check_sq=False,check_header=False)
   #  self.reads_mapDiscord=pysam.AlignmentFile(options_.discord_read_bwa+'/'+str(sample)+'_'+str(chr)+":"+str(int(pos)-50)+"-"+str(int(pos)+50)+"_discord.sam", "rb",check_sq=False)
     self.reference_seq=pysam.FastaFile(options_.reference)
     self.alu_reference_seq=pysam.FastaFile(options_.alu_reference)
@@ -421,7 +421,7 @@ def make_alu_examples(hparams,genotype_file,debug_mode=0,shuffle_depth=95):
   tf=[]
   tf_async=[]
   genotype_use=[]
-  print('make Alu trfrecord ....')
+  print('make MEI trfrecord ....')
   p=Pool(20)
   i=0
 #  with open(genotype_file, 'r', encoding='utf-8') as f:

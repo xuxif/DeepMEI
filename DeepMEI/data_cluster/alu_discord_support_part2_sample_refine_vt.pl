@@ -25,11 +25,13 @@ if($step == 1)
 {
 #	@ori=`samtools view -T $REF $bam_file $record |head --lines=200 `;
 	@ori=`cat regions_$ran_num/HG002_${record}.sam |head --lines=200 `;
+	`rm regions_$ran_num/HG002_${record}.sam `;
 }
 elsif($step ==2)
 {
 #	@ori=`samtools view -T $REF $bam_file $record |head --lines=200 |perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
 	@ori=`cat regions_$ran_num/HG002_${record}.sam |head --lines=200 |perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
+	`rm regions_$ran_num/HG002_${record}.sam `;
 }
 #@ori=`samtools view -T $REF $bam_file $record |head --lines=200 `; #|perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
 my @read_ori;

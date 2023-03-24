@@ -1,0 +1,4 @@
+cat ~/DeepMEI_output/HG002_test/deepmei_HG002_test.bed|cut -f1-3|perl -npe "s/\t/:/;s/\t/\-/"|while read record;do poly_C=`samtools view HG002_${record}_mapClipR.sam |cut -f6,10|perl -F'\t' -alne '$F[0]=~s/.*?(\d+)M.*/\1/;$seq=substr($F[1],$F[0]-10,20) ;print "$seq";'|grep "C\{10\}"|wc -l `;echo -e "$record\t$poly_C";done |grep -v "	0$" >tmp_polyC_right.txt  &
+cat ~/DeepMEI_output/HG002_test/deepmei_HG002_test.bed|cut -f1-3|perl -npe "s/\t/:/;s/\t/\-/"|while read record;do poly_C=`samtools view HG002_${record}_mapClipR.sam |cut -f6,10|perl -F'\t' -alne '$F[0]=~s/^(\d+)S.*/\1/;$seq=substr($F[1],$F[0]-10,20) ;print "$seq";'|grep "C\{10\}"|wc -l `;echo -e "$record\t$poly_C";done |grep -v "	0$" >tmp_polyC_left.txt  &
+wait
+cat tmp_polyC_left.txt tmp_polyC_right.txt |perl -npe "s/[:\-]/\t/g"|sort -k1,1 -k2,2n |bedtools merge -c 4 -o sum |perl -F'\t' -alne 'if($F[3]>5){print $_;}'

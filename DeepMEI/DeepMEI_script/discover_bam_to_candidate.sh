@@ -12,7 +12,7 @@ ME_REF=$2
 output=$3
 REF=$4
 ME_bed=$5
-threads=20
+threads=10
 split_len=15
 if [[ -n "$6" ]]
 then
@@ -25,7 +25,7 @@ extractSC=SE-MEI/extractSoftclipped
 
 rm -rf tmp_$output 2>/dev/null
 mkdir tmp_$output
-samtools view -T $REF -H $input_file |grep "SN:" |cut -f2,3|perl -npe "s/SN://;s/LN://"|perl -npe "s/\t/\t1\t/"|grep -f chr_list.txt|bedtools makewindows -b /dev/stdin -w 50000000 |perl -npe "s/\t/:/;s/\t/\-/"|xargs -n 1 -I{} -P $threads bash extract_candidate.sh $input_file $split_len $ME_REF $threads {} $REF ${output}
+samtools view -T $REF -H $input_file |grep "SN:" |cut -f2,3|perl -npe "s/SN://;s/LN://"|perl -npe "s/\t/\t1\t/"|grep -f chr_list.txt|bedtools makewindows -b /dev/stdin -w 50000000 |perl -npe "s/\t/:/;s/\t/\-/"|xargs  -I{} -P $threads bash extract_candidate.sh $input_file $split_len $ME_REF $threads {} $REF ${output}
 cat tmp_$output/soft_candidate_${output}*.txt >candidate_pos/${output}_soft_candidate.txt
 rm -rf tmp_$output 2>/dev/null
 #$extractSC -l $split_len $input_file > /dev/stdout | \

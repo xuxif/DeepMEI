@@ -298,7 +298,7 @@ cd ${base}/DeepMEI/DeepMEI_model
 #1       FRAM:SINE/Alu   2       65.93868112158563       11031133        11031153        20      14      25      0.0136986301369863      0       9       0
 
 cat <(cat $head_vcf |perl -npe "s/SAMPLE$/${output}/") >${base}/DeepMEI/final_vcf/batch_cdgc/${output}.vcf
-cat ../final_vcf/batch_cdgc/deepmei_${output}.bed |while read chr start end info;do echo -ne "$chr\t$info\t"; grep "^$chr"$'\t'"$start"$'\t'"$end"$'\t'  ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP.bed |cut -f4-  ;done |perl -F'\t' -alne '$F[2]=~s/1/0\/1/;$F[2]=~s/2/1\/1/;$pos=$F[4];$me=$F[1];$me=~s/.*://;if($F[4]>$F[5]){$pos=$F[5];};print "$F[0]\t$pos\t.\tN\t<INS:ME:$me>\t.\tPASS\tSVTYPE=INS;clipPosLeft=$F[4];clipPosRight=$F[5];PS=$F[3];ME=$F[1];TSD_len=$F[6];clipLeftNum=$F[7];clipRightNum=$F[8];clipRate=$F[9];HclipLeftNum=$F[10];HclipRightNum=$F[11];polyN_direction=$F[12]\tGT\t$F[2]";'|sort -k1,1 -k2,2n >>${base}/DeepMEI/final_vcf/batch_cdgc/${output}.vcf
+cat ../final_vcf/batch_cdgc/deepmei_${output}.bed |while read chr start end info;do echo -ne "$chr\t$info\t"; grep "^$chr"$'\t'"$start"$'\t'"$end"$'\t'  ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP.bed |head -n 1|cut -f4-  ;done |perl -F'\t' -alne '$F[2]=~s/1/0\/1/;$F[2]=~s/2/1\/1/;$pos=$F[4];$me=$F[1];$me=~s/.*://;if($F[4]>$F[5]){$pos=$F[5];};print "$F[0]\t$pos\t.\tN\t<INS:ME:$me>\t.\tPASS\tSVTYPE=INS;clipPosLeft=$F[4];clipPosRight=$F[5];PS=$F[3];ME=$F[1];TSD_len=$F[6];clipLeftNum=$F[7];clipRightNum=$F[8];clipRate=$F[9];HclipLeftNum=$F[10];HclipRightNum=$F[11];polyN_direction=$F[12]\tGT\t$F[2]";'|sort -k1,1 -k2,2n >>${base}/DeepMEI/final_vcf/batch_cdgc/${output}.vcf
 
 
 #cat <(cat ../head.vcf|perl -npe "s/SAMPLE$/${output}/") \

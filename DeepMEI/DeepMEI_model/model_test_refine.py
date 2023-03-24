@@ -26,7 +26,7 @@ _TEST = 'test.tfrecord'
 hparams=PileupImageOptions(3)
 try:
     opts, args = getopt.getopt(sys.argv[1:],"i:s:t:o:q:r:",["input_gt=","split_softclipped_sort=","threshold=","output=","quick_model=","reference="])
-    print(opts)
+#    print(opts)
 except getopt.GetoptError:
   print('python model_test.py  -i <input_gt> -o <output_predict_file> -s <split_softclipped_sort> -ref <reference> -q <quick model>')
   sys.exit(2)
@@ -42,12 +42,12 @@ for opt, arg in opts:
     quick_model= arg
   elif opt in ("-s", "--split_softclipped_sort"):
     hparams.split_softclipped= arg
-    print(arg)
+#    print(arg)
   elif opt in ("-t", "--threshold"):
     threshold_score= arg
   elif opt in ("-r", "--reference"):
     hparams.reference= arg
-    print(arg)
+#    print(arg)
 def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quick_model,use_existing_data=True,seed=1):
   random.seed(seed)
   tf.random.set_seed(seed)
@@ -90,7 +90,7 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
     for genotype_each in f:
       genotype_total.append(genotype_each)
   genotype_total=np.array(genotype_total)
-  group_len=6000
+  group_len=500
   genotype_notFill=list(np.array(genotype_total[int(len(genotype_total)/group_len)*group_len:]))
   genotype_total=genotype_total[0:int(len(genotype_total)/group_len)*group_len]
   genotype_total=list(np.reshape(genotype_total,(-1,group_len)))
@@ -107,9 +107,10 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
     features=[]
     t,record_use,feature=make_alu_examples(hparams,genotype_batch,0,95)
     features=np.array(feature).reshape([-1,hparams.height,391,6])
+    feature=[]
 #    continue
 #    print(features.shape)
-    features_pad=features
+#    features_pad=features
     test_dataset = tf.data.Dataset.from_tensor_slices((features[:,:,20:371,:], np.array([0]*t)))
     test_dataset = test_dataset.batch(batch_size=128)
     predict_ori=model.predict(test_dataset)
@@ -119,6 +120,7 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
         if predict_ori_each[0]<0.6:
           features_select.append(feature_ori_each)
           record_use_select.append(record_use_ori_each)
+    features=[]
     print('original site check finished')
 #    predict.append(predict_ori)
 #    print(genotype_batch.shape)
@@ -131,6 +133,7 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
       sys.exit('not find any insertion')
 
     features_pad=np.array(features_select)
+    features_select=[]
 #    print(features_pad.shape)
     pad_range=[20,21,19,22,18,23,17,24,16,25,15,26,14,27,13,28,12,29,11,30,10,31,9,32,8,33,7,34,6,35,5,36,4,37,3,38,2,39,1]
     if quick_model=='1':
