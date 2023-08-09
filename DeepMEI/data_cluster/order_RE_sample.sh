@@ -20,7 +20,7 @@ else
 fi
 cd regions_$ran_num
 
-sort -k1,1 -k2,2n $input_gt |perl -F'\t' -alne '$start=$F[1]-50;$end=$F[1]+50;print "$F[0]:$start-$end\tME";' >input_sort.bed
+sort -k1,1 -k2,2n $input_gt |perl -F'\t' -alne '$start=$F[1]-50;$end=$F[1]+50;print "$F[0]:$start-$end\t$F[4]";' >input_sort.bed
 #split -n l/100  --additional-suffix=_input input_sort.bed  split_
 split -n l/100  --additional-suffix=_input input_sort.bed  split_
 
