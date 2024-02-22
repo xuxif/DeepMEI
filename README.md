@@ -17,7 +17,7 @@ These timings highlight DeepMEI's enhanced efficiency and scalability, confirmin
 
 Conda Version Update:
 The Conda version of DeepMEI, currently at v1.6.6, will soon receive updates to match the enhancements found in the Docker version. Stay tuned for this update, which will further reduce hardware requirements and improve runtime efficiency, allowing DeepMEI to run smoothly even on personal computers with limited resources.
-Install DeepMEI with anaconda/conda
+<br >Install DeepMEI with anaconda/conda (without reference included):
 ```
   conda env create -n deepmei 
   conda activate deepmei
