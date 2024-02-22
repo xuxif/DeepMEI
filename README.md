@@ -5,8 +5,24 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 <br/>
 ##
 ## Docker: <br />
-We highly recommend using the Docker version of DeepMEI as it eliminates the need for server configuration and dependency management. Our team updates the Docker version frequently to reduce hardware requirements. With version v1.6.6, DeepMEI can run smoothly on a personal computer with 16GB memory, I7 12700 CPU, and a 128GB SSD, analyzing 30x WGS sequence data of HG01529.final.cram from 1kGP phase 4 in just 30 minutes. If you require faster analysis, please let us know. In a bare metal with 32GB memory and 16 cores (32 threads), DeepMEI (for server) completes the same analysis in just 22 minutes.
+We are excited to announce significant updates to DeepMEI, making it more efficient and adaptable for genomic analysis across various computational settings. Our continuous efforts to optimize DeepMEI have led to notable improvements in runtime efficiency, especially in environments with higher computational capacity.
 
+Docker Version Update to v1.6.24:
+The latest Docker version of DeepMEI, v1.6.24, has been enhanced to provide even better performance across a range of hardware configurations. Our testing, using the NA12878 37.3X whole-genome sequencing data, has shown remarkable efficiency improvements:
+
+On a system with 12 CPUs and 16 GB of memory, DeepMEI now completes its run in 96 minutes.
+With 32 CPUs and 64 GB memory, the runtime significantly decreases to just under 50 minutes.
+Further increasing resources to 32 CPUs and 128 GB memory, DeepMEI finishes in 48 minutes.
+Maximizing the available resources with 64 CPUs and 256 GB memory, DeepMEI completes the task in approximately 40 minutes.
+These timings highlight DeepMEI's enhanced efficiency and scalability, confirming its suitability for high-throughput settings where runtime is critical.
+
+Conda Version Update:
+The Conda version of DeepMEI, currently at v1.6.6, will soon receive updates to match the enhancements found in the Docker version. Stay tuned for this update, which will further reduce hardware requirements and improve runtime efficiency, allowing DeepMEI to run smoothly even on personal computers with limited resources.
+
+Recommendation:
+For ease of use and to avoid server configuration and dependency management challenges, we highly recommend using the Docker version of DeepMEI. Our team frequently updates this version to ensure optimal performance across a wide range of computational environments. For instance, DeepMEI can analyze 30x WGS sequence data in significantly reduced times, demonstrating its adaptability and performance on both personal and server-grade computers.
+
+Should you require faster analysis, please do not hesitate to reach out to us. Our goal is to continuously improve DeepMEI, making genomic analysis more efficient and accessible to researchers worldwide.
 Pull docker image from docker hub
 ```
   docker pull xuxiaofeiscu/deepmei:latest
