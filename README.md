@@ -4,7 +4,6 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 ![This is an image](https://github.com/xuxif/DeepMEI/blob/main/workflow.png)
 <br/>
 ##
-## Docker: <br />
 We are excited to announce significant updates to DeepMEI, making it more efficient and adaptable for genomic analysis across various computational settings. Our continuous efforts to optimize DeepMEI have led to notable improvements in runtime efficiency, especially in environments with higher computational capacity.
 
 Docker Version Update to v1.6.24:
@@ -23,6 +22,7 @@ Recommendation:
 For ease of use and to avoid server configuration and dependency management challenges, we highly recommend using the Docker version of DeepMEI. Our team frequently updates this version to ensure optimal performance across a wide range of computational environments. For instance, DeepMEI can analyze 30x WGS sequence data in significantly reduced times, demonstrating its adaptability and performance on both personal and server-grade computers.
 
 Should you require faster analysis, please do not hesitate to reach out to us. Our goal is to continuously improve DeepMEI, making genomic analysis more efficient and accessible to researchers worldwide.
+## Docker: <br />
 Pull docker image from docker hub
 ```
   docker pull xuxiaofeiscu/deepmei:latest
