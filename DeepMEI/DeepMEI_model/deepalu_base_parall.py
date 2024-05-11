@@ -98,7 +98,7 @@ class PileupImageOptions:
   def __init__(self,a):
       self.name=a
 options_=PileupImageOptions(3)
-print(options_.base_color_stride)
+#print(options_.base_color_stride)
 
 
 class ImageRow:
@@ -154,7 +154,7 @@ class DV_call:
   reads_mapClipR=''
   reads_mapDiscord=''
   reference_seq=''
-  alu_reference_seq=''
+#  alu_reference_seq=''
   pos=''
   def __init__(self,options_,chr,pos,sample):
   #  print(chr+':'+pos)
@@ -167,7 +167,7 @@ class DV_call:
     self.reads_mapClipR=pysam.AlignmentFile(options_.split_softclipped+'/'+str(sample)+'_'+str(chr)+":"+str(int(pos)-50)+"-"+str(int(pos)+50)+"_mapClipR.sam", "rb",check_sq=False,check_header=False)
   #  self.reads_mapDiscord=pysam.AlignmentFile(options_.discord_read_bwa+'/'+str(sample)+'_'+str(chr)+":"+str(int(pos)-50)+"-"+str(int(pos)+50)+"_discord.sam", "rb",check_sq=False)
     self.reference_seq=pysam.FastaFile(options_.reference)
-    self.alu_reference_seq=pysam.FastaFile(options_.alu_reference)
+#    self.alu_reference_seq=pysam.FastaFile(options_.alu_reference)
 #    if sample=='HG002':
 #      self.reference_seq=pysam.FastaFile(options_.reference_hs37d5)
 
@@ -214,7 +214,7 @@ def StrandColor(on_positive_strand):
   return options_.positive_strand_color if on_positive_strand else options_.negative_strand_color
 
 BaseColor_value=MatchesRefColor(True)
-print(BaseColor_value)
+#print(BaseColor_value)
 
 
 
@@ -305,13 +305,13 @@ def EncodeRead(map_type,clip_pad,alu_call,read,image_start_pos,debug_mode):
     ref_bases=alu_call.reference_seq.fetch(reference=read.reference_name,
                                            start=read.reference_start-(clip_start-left_cut_num),
                                            end=read.reference_end+clip_end)
-  else:
-    start=read.reference_start-clip_start
-    if start <0:
-      start=0
-    ref_bases=alu_call.alu_reference_seq.fetch(reference=read.reference_name,
-                                               start=start,
-                                               end=read.reference_end+clip_end)   
+#  else:
+#    start=read.reference_start-clip_start
+#    if start <0:
+#      start=0
+#    ref_bases=alu_call.alu_reference_seq.fetch(reference=read.reference_name,
+#                                               start=start,
+#                                               end=read.reference_end+clip_end)   
 #    print(read.cigartuples)
   for tmp_i in range(0,len(ref_bases)):
     if ref_bases[tmp_i]=='a':
@@ -421,22 +421,22 @@ def make_alu_examples(hparams,genotype_file,debug_mode=0,shuffle_depth=95):
   tf=[]
   tf_async=[]
   genotype_use=[]
-  print('make MEI trfrecord ....')
+#  print('make MEI trfrecord ....')
   p=Pool(20)
   i=0
 #  with open(genotype_file, 'r', encoding='utf-8') as f:
-  print('start pool')
+#  print('start pool')
   for record_each in genotype_file:
     i=i+1
     tf_each=p.apply_async(make_alu_examples_each, (hparams,record_each))#.get()
 #    print(tf_each)
     tf_async.append(tf_each)
-  print('end pool')
+#  print('end pool')
   for tf_each in tf_async:
     feature_as,record_as=tf_each.get()
     tf.append(feature_as)
     genotype_use.append(record_as)
-  print('end pool add')
+#  print('end pool add')
   p.close()
   p.join()
   return i,genotype_use,tf

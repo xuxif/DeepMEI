@@ -60,18 +60,18 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
   filepath=hparams.model_base_dir+"/weights/val_best_model"
   if load_model=='last':
     if os.path.isfile(filepath+'/variables/variables.data-00000-of-00001'):
-      print("Load existed best model ......")   
+      print("Load existing best model ......")   
       model = keras.models.load_model(filepath)
-      print("Load existed best model success !")
+      print("Successfully loaded the existing best model!")
     else:
-      print("model not existed ......")
+      print("model do not existed ......")
       sys.exit('load_model is null')
   elif load_model=='best':
     if os.path.isfile(filepath+'/variables/variables.data-00000-of-00001'):
-      print("Load existed best model ......")   
+      print("Load existing best model ......")   
       model = keras.models.load_model(filepath)
     else:
-      print("model not existed ......")   
+      print("model do not existed ......")   
       sys.exit('load_model is null')
   elif load_model=='load_weight':
     print("load weight ......")
@@ -100,10 +100,15 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
 #  print(genotype_notFill)
 #  print(genotype_total)
 #  print('###')
+  print("Genotyping with CNN model")
   predict=[]
   record=[]
   record_use_total=[]
+  run_count=len(genotype_total)
+  run_i=1
   for genotype_batch in genotype_total:
+    print(f"Total run: {run_count}, current run: {run_i}")
+    run_i=run_i+1
     features=[]
     t,record_use,feature=make_alu_examples(hparams,genotype_batch,0,95)
     features=np.array(feature).reshape([-1,hparams.height,391,6])
@@ -121,7 +126,7 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
           features_select.append(feature_ori_each)
           record_use_select.append(record_use_ori_each)
     features=[]
-    print('original site check finished')
+#    print('original site check finished')
 #    predict.append(predict_ori)
 #    print(genotype_batch.shape)
     if len(features_select) ==0 :
@@ -135,6 +140,7 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
     features_pad=np.array(features_select)
     features_select=[]
 #    print(features_pad.shape)
+    pad_range=[20,19,23,17,25,15,27,13,29,11,31,9,33,7,35,5,37,3,39,1]
     pad_range=[20,21,19,22,18,23,17,24,16,25,15,26,14,27,13,28,12,29,11,30,10,31,9,32,8,33,7,34,6,35,5,36,4,37,3,38,2,39,1]
     if quick_model=='1':
       pad_range=[20,21,19,22,18,23]
