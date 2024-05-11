@@ -16,12 +16,13 @@ Maximizing the available resources with 64 CPUs and 256 GB memory, DeepMEI compl
 These timings highlight DeepMEI's enhanced efficiency and scalability, confirming its suitability for high-throughput settings where runtime is critical.
 
 Conda Version Update:
-The Conda version of DeepMEI, currently at v1.6.6, will soon receive updates to match the enhancements found in the Docker version. Stay tuned for this update, which will further reduce hardware requirements and improve runtime efficiency, allowing DeepMEI to run smoothly even on personal computers with limited resources.
+The Conda version of DeepMEI is v1.6.25. Stay tuned for this update, which will further reduce hardware requirements and improve runtime efficiency, allowing DeepMEI to run smoothly even on personal computers with limited resources.
 <br >Install DeepMEI with anaconda/conda (without reference included):
 ```
   conda env create -n deepmei 
   conda activate deepmei
   conda install -c bioconda deepmei -y
+  git clone https://github.com/xuxif/DeepMEI.git
 ```
 
 Recommendation:
