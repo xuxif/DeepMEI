@@ -81,12 +81,14 @@ Pull docker image from docker hub
   conda install samtools bedtools  bwa -y
   conda install repeatmasker -y
   ```
+
 #### Configure your server with a .yml file of conda 
 The above steps detail the installation process of all dependencies. We also provide a conda environment configuration file (deepmei.yml).Users only need to run the following code to configure the required environment.
  ```
    conda env create -f deepmei.yml
  ```
 </br>
+
 #### Configure your server with bioconda 
 Owing to the file size of DeepMEI (more than 600 MB) we can not package the model file into the conda package. As a result the bioconda package of DeepMEI contain the requirement of evironment configuration and user need to download the DeepMEI code with github. Users only need to run the following code to configure the required environment.
  ```
