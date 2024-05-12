@@ -13,6 +13,7 @@
 chomp(@name);
 foreach $i (@name)
 {
+#10:101340234-101340334	HISEQ1:20:H9V1RADXX:1:2211:5155:41672	1
 	@dis=split(/\t/,$i);
 	$RE{"$dis[1]"}=1;
 	$REG{"$dis[1]"}=$dis[0];

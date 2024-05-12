@@ -11,7 +11,7 @@ while(<STDIN>)
 	@md="";
 	for($i=0;$i<=$#F;$i++)
 	{
-		if($F[$i]=~/MD/)
+		if($F[$i]=~/^MD/)
 		{
 			$md_tmp=$F[$i];
 			$md_tmp=~s/MD:Z://;

@@ -6,6 +6,7 @@ use List::Util qw/max/;
 $ran_num=$ARGV[0];
 $ori_dir="/dev/shm/regions_$ran_num";
 $out_dir="split_softclipped_$ran_num";
+$out_dir_sort="split_softclipped_sort_$ran_num";
 if(not -e $out_dir)
 {
 	`mkdir $out_dir`;
@@ -38,7 +39,7 @@ while(<STDIN>)
 	{
 	#	@ori=`samtools view -T $REF $bam_file $record |head --lines=200 |perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
 		$_=<STDIN>;
-		@ori=`samtools view -T $REF $bam_file $record |head --lines=200 |perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
+		@ori=`samtools view -T $REF $bam_file $record |head --lines=1000 |perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
 #		`rm $ori_dir/HG002_${record}.sam `;
 	}
 #	print "$#ori\n@ori\n";
@@ -60,7 +61,7 @@ while(<STDIN>)
 	$alu_pos=sum(@alu_poss)/2;
 	foreach (@ori)
 	{
-		if($i>=200)
+		if($i>=1000)
 		{
 			last;
 		}
@@ -225,7 +226,7 @@ while(<STDIN>)
 	}
 	for($hard_j=0;$hard_j<@right_clip_seq;$hard_j++)
 	{
-		if($right_clip_len[$hard_j] == max(@right_clip_len_t) and abs($right_map_end[$hard_j]-$right_map_mid)<5)
+		if($right_clip_len[$hard_j] == max(@right_clip_len_t) and abs($right_map_end[$hard_j]-$right_map_mid)<3)
 		{
 			$hard_part2_seq=$right_clip_seq[$hard_j];
 			last;
@@ -249,7 +250,7 @@ while(<STDIN>)
 		$tmp_hard_read_ori[10]=$tmp_hard_read_ori[10].'B'x$hard_part2_len;
 		$tmp_hard_read_ori[5]=~s/\d+H$/${hard_part2_len}S/;
 		#	print "right:$hard_part2_len\n";
-		if(abs($tmp_hard_read_ori[3]+$hard_len-$right_map_mid)<5 or $fake_seq==1)
+		if(abs($tmp_hard_read_ori[3]+$hard_len-$right_map_mid)<3 or $fake_seq==1)
 		{
 			#print MPCR join("\t",@tmp_hard_read_ori)."\n";
 			push @group_right,join("\t",@tmp_hard_read_ori);
@@ -272,7 +273,7 @@ while(<STDIN>)
 	}
 	for($hard_j=0;$hard_j<@left_clip_seq;$hard_j++)
 	{
-		if($left_clip_len[$hard_j] == max(@left_clip_len_t) and abs($left_map_start[$hard_j]-$left_map_mid)<5)
+		if($left_clip_len[$hard_j] == max(@left_clip_len_t) and abs($left_map_start[$hard_j]-$left_map_mid)<3)
 		{
 			$hard_part2_seq=$left_clip_seq[$hard_j];	
 			last;
@@ -293,7 +294,7 @@ while(<STDIN>)
 		$tmp_hard_read_ori[4]=50;
 		$tmp_hard_read_ori[5]=~s/^\d+H/${hard_part2_len}S/;
 		#	print "left:$hard_part2_len\n";
-		if(abs($tmp_hard_read_ori[3]-$left_map_mid)<5 or $fake_seq==1)
+		if(abs($tmp_hard_read_ori[3]-$left_map_mid)<3 or $fake_seq==1)
 		{
 			#print MPCL join("\t",@tmp_hard_read_ori)."\n";
 			push @group_left,join("\t",@tmp_hard_read_ori);
@@ -308,7 +309,7 @@ while(<STDIN>)
 	for($i=0;$i<@left_clip_seq;$i++)
 	{
 		#print "seq:$left_clip_seq[$i]\t".abs($left_map_mid-$left_map_start[$i])."\t$left_read_i[$i]\t".max(@left_clip_len)."\n";
-		if($left_clip_seq[$i]=~/[AT]{7,}/ or (@{[$left_clip_seq[$i]=~m/[^AT]/g]} <= 3 and abs($left_map_mid-$left_map_start[$i])<5))
+		if($left_clip_seq[$i]=~/[AT]{7,}/ or (@{[$left_clip_seq[$i]=~m/[^AT]/g]} <= 3 and abs($left_map_mid-$left_map_start[$i])<3))
 		{
 			$left_has_polyAT[$i]=1;
 			$left_poly_AT_total+=@{[$left_clip_seq[$i]=~m/[AT]{7,}/g]};
@@ -321,7 +322,7 @@ while(<STDIN>)
 	}
 	for($i=0;$i<@right_clip_seq;$i++)
 	{
-		if($right_clip_seq[$i]=~/[AT]{7,}/ or (@{[$right_clip_seq[$i]=~m/[^AT]/g]} <= 3 and abs($right_map_mid-$right_map_end[$i])<5))
+		if($right_clip_seq[$i]=~/[AT]{7,}/ or (@{[$right_clip_seq[$i]=~m/[^AT]/g]} <= 3 and abs($right_map_mid-$right_map_end[$i])<3))
 		{
 			$right_has_polyAT[$i]=1;
 			$right_poly_AT_total+=@{[$right_clip_seq[$i]=~m/[AT]{7,}/g]};	
@@ -349,7 +350,7 @@ while(<STDIN>)
 			#	$tmp_read_ori[6]='chr1';
 			#}	
 			#$tmp_read_ori[7]=$left_clip_len[$i];
-			if($left_has_polyAT[$i]==1)
+			if($left_has_polyAT[$i]==1 and abs($left_map_start[$i]-$left_map_mid)<3)
 			{
 				#print MPCL join("\t",@tmp_read_ori)."\n";
 				push @group_left,join("\t",@tmp_read_ori);
@@ -377,7 +378,7 @@ while(<STDIN>)
 			#	$tmp_read_ori[6]='chr2';
 			#}	
 			#$tmp_read_ori[7]=$right_clip_len[$i];
-			if($right_has_polyAT[$i]==1)
+			if($right_has_polyAT[$i]==1 and abs($right_map_end[$i]-$right_map_mid)<3)
 			{
 				#print MPCR join("\t",@tmp_read_ori)."\n";
 				push @group_right,join("\t",@tmp_read_ori);
@@ -425,7 +426,7 @@ while(<STDIN>)
 			if($left_map_alu[$i]==0)
 			{
 	#				print abs($right_map_end[$i]-$right_map_mid)."\t".&seq_compare($t_seq,$right_clip_seq[$i],1)."\t".$right_clip_seq[$i]."\t$t_seq\n";
-				if(abs($left_map_start[$i]-$left_map_mid)<5)
+				if(abs($left_map_start[$i]-$left_map_mid)<3)
 				{
 					$left_map_alu[$i]=1;
 				}
@@ -473,7 +474,7 @@ while(<STDIN>)
 			if($right_map_alu[$i]==0)
 			{
 	#			print abs($right_map_end[$i]-$right_map_mid)."\n";
-				if(abs($right_map_end[$i]-$right_map_mid)<5)
+				if(abs($right_map_end[$i]-$right_map_mid)<3)
 				{
 					$right_map_alu[$i]=1;
 				}
@@ -503,10 +504,10 @@ while(<STDIN>)
 	foreach $read_i (@group_right)
 	{
 		@read_info=split(/\t/,$read_i);
-		if($read_info[6] eq "=")
-		{
+		#if($read_info[6] eq "=")
+		#{
 			$clipR_chrom++;
-		}
+		#}
 		if($read_info[5] =~/^\d+S/ and $read_info[5] =~/S$/)
 		{
 			$clip_both_count++;
@@ -516,10 +517,10 @@ while(<STDIN>)
 	foreach $read_i (@group_left)
 	{
 		@read_info=split(/\t/,$read_i);
-		if($read_info[6] eq "=")
-		{
+		#if($read_info[6] eq "=")
+		#{
 			$clipL_chrom++;
-		}
+			#}
 		if($read_info[5] =~/^\d+S/ and $read_info[5] =~/S$/)
 		{
 			$clip_both_count++;
@@ -539,20 +540,16 @@ while(<STDIN>)
 	#my $clip_both=`bash clip_both.sh ${out_dir}/${record}_mapClipL.sam ${out_dir}/${record}_mapClipR.sam `;
 	#                        -b <(cat ../data_cluster/tmp_3_tsd.bed |perl -F'\t' -alne 'if($F[1]>=-10 and $F[1] <=50 and $F[2]>=2 and $F[3]>=2 and $F[4]<0.3) {print "$_";}' |cut -f1|perl -npe "s/HG002_//"|cut -d':' -f 2-|perl -npe "s/:/\t/;s/\-/\t/" ) \
 	my $tsd_len=$right_map_mid-$left_map_mid;
-	if($tsd_len>=-20 and  $tsd_len<=70 and $clipL_chrom>=2 and $clipR_chrom>=2 and $clip_both<0.3)
+	my ($iden_sum_left,$max_clip_left)=&clip_seq_iden(-1,@group_left_clip);
+	my ($iden_sum_right,$max_clip_right)=&clip_seq_iden(1,@group_right_clip);
+	#	print "if($tsd_len>=-20 and  $tsd_len<=70 and $max_clip_left>2 and $max_clip_right>2 and $clip_both<0.3 and $iden_sum_left>=0.8 and  $iden_sum_right>=0.9)\t $left_map_mid $right_map_mid\n";
+	#	print "$record\tif($tsd_len>=-20 and  $tsd_len<=70 and (($max_clip_left>2 and $max_clip_right>2) or $max_clip_left + $max_clip_right>8) and $clip_both<0.3 and $iden_sum_left>=0.8 and  $iden_sum_right>=0.8)\n";
+	if($tsd_len>=-20 and  $tsd_len<=70 and (($max_clip_left>2 and $max_clip_right>2) or $max_clip_left + $max_clip_right>8) and $clip_both<0.3 and $iden_sum_left>=0.8 and  $iden_sum_right>=0.8)
 	{
 		open(BPINF,">${out_dir}/HG002_${record}_BPinfo.txt");
 		print BPINF "$record\t$left_map_mid\t$right_map_mid\t";
-		#	`cat head_$ran_num.sam >${out_dir}/HG002_${record}_mapRef.sam`;
-		#`cat head_$ran_num.sam >${out_dir}/HG002_${record}_mapClipR.sam`;
-		#`cat head_$ran_num.sam >${out_dir}/HG002_${record}_mapClipL.sam`;
 		@record_split=split(/[:\-]/,$record);
 		#1	527089	0	HG002	ALU
-	#	print join("\n",@group_left_clip)."\n";
-		my $iden_sum_left=&clip_seq_iden(-1,@group_left_clip);
-	#	print join("\n",@group_right_clip)."\n";
-		my $iden_sum_right=&clip_seq_iden(1,@group_right_clip);
-		#print "$record_split[0]\t".(($record_split[1]+$record_split[2])/2)."\t0\tHG002\t$me_type\t$iden_sum_left\t$iden_sum_right\n";
 		my $tsd_seq="";
 		if($left_map_mid+1<$right_map_mid)
 		{
@@ -562,15 +559,23 @@ while(<STDIN>)
 		if($tsd_seq=~/^.?A{10,}.?$/ or $tsd_seq=~/^.?T{10,}.?$/ or $tsd_seq=~/^.?C{10,}.?$/ or $tsd_seq=~/^.?G{10,}.?$/  or $tsd_seq=~/^.?(AT){4,}.?$/ )
 		{
 		}	
-		elsif($iden_sum_left>=0.8 and  $iden_sum_right>=0.8)
-		{
 	        my $map_mid_all=int(($left_map_mid+$right_map_mid)/2);
-	    	open(MPR,">${out_dir}/HG002_${record}_mapRef.sam");
-	    	open(MPCL,">${out_dir}/HG002_${record}_mapClipL.sam");
-	    	open(MPCR,">${out_dir}/HG002_${record}_mapClipR.sam");
-	    	print "$record_split[0]\t".int(($record_split[1]+$record_split[2])/2)."\t0\tHG002\t$me_type\n";#$iden_sum_left\t$iden_sum_right\n";
+
+		`cat head_$ran_num.sam >${out_dir_sort}/HG002_${record}_mapRef.sam`;
+		`cat head_$ran_num.sam >${out_dir_sort}/HG002_${record}_mapClipL.sam`;
+		`cat head_$ran_num.sam >${out_dir_sort}/HG002_${record}_mapClipR.sam`;
+	    	open(MPR,">>${out_dir_sort}/HG002_${record}_mapRef.sam");
+	    	open(MPCL,">>${out_dir_sort}/HG002_${record}_mapClipL.sam");
+	    	open(MPCR,">>${out_dir_sort}/HG002_${record}_mapClipR.sam");
+	    	print "$record_split[0]\t".int(($record_split[1]+$record_split[2])/2)."\t0\tHG002\t$me_type\n"; #$iden_sum_left\t$iden_sum_right\n";
+
+		@group_left=&sort_reads(@group_left);
+		@group_right=&sort_reads(@group_right);
+		@group_ref=&sort_reads(@group_ref);
+
 	    	foreach $read_i (@group_ref)
 	    	{
+			if($read_i=~/^$/) { next};
 			@F=split(/\t/,$read_i);
 			print MPR join("\t",@F);
 			print MPR "\n";
@@ -578,6 +583,7 @@ while(<STDIN>)
 		$i=0;
 	    	foreach $read_i (@group_left)
 	    	{
+			if($read_i=~/^$/) { next};
 			$i++;
 			@F=split(/\t/,$read_i);
 			if($F[5] ne '*' and $F[4] == 0 )
@@ -588,12 +594,13 @@ while(<STDIN>)
 			print MPCL "\n";
 			if($i>15)
 			{
-				last;
+				#last;
 			}
 	    	}
 		$i=0;
 	    	foreach $read_i (@group_right)
 	    	{
+			if($read_i=~/^$/) { next};
 			$i++;
 			@F=split(/\t/,$read_i);
 			if($F[5] ne '*' and $F[4] == 0 )
@@ -604,13 +611,12 @@ while(<STDIN>)
 			print MPCR "\n";
 			if($i>15)
 			{
-				last;
+				#last;
 			}
 	    	}
 	    	close(MPCR);
 	    	close(MPCL);
 	    	close(MPR);
-		}
 		print BPINF "$tsd_len\t$clipL_chrom\t$clipR_chrom\t$clip_both\t$left_hard_supp_count\t$right_hard_supp_count\t$polyAT_direction\n";
 		close(BPINF);
 	}
@@ -622,6 +628,7 @@ sub clip_seq_iden
 	my %BC=();
 	my $base="";
 	my @iden_sum=();
+	my $max_value=0;
 	if($dir eq '-1')
 	{
 		for(my $i=0;$i<5;$i++)
@@ -647,6 +654,34 @@ sub clip_seq_iden
 				push(@iden_sum,(max(values %BC)/sum(values %BC)));
 			}
 			%BC=();
+		}
+		for(my $j=0;$j<=$#seq_long;$j++)
+		{
+			if(length($seq_long[$j])>=5)
+			{
+				$base=substr($seq_long[$j],-5,5);	
+				$BC{$base}++;
+			}
+		}
+		$max_value=max(values %BC);
+		my $max_key="";
+		foreach $key (keys %BC)
+		{
+			if($BC{$key}==$max_value)
+			{
+				$max_key=$key;
+				last;
+			}
+		}
+		for(my $j=0;$j<=$#seq_long;$j++)
+		{
+			if(length($seq_long[$j])<5)
+			{
+				if($key=~/$seq_long[$j]$/)
+				{
+					$max_value++;
+				}
+			}
 		}
 	}
 	else
@@ -675,8 +710,37 @@ sub clip_seq_iden
 			}
 			%BC=();
 		}
+
+		for(my $j=0;$j<=$#seq_long;$j++)
+		{
+			if(length($seq_long[$j])>=5)
+			{
+				$base=substr($seq_long[$j],0,5);	
+				$BC{$base}++;
+			}
+		}
+		$max_value=max(values %BC);
+		my $max_key="";
+		foreach $key (keys %BC)
+		{
+			if($BC{$key}==$max_value)
+			{
+				$max_key=$key;
+				last;
+			}
+		}
+		for(my $j=0;$j<=$#seq_long;$j++)
+		{
+			if(length($seq_long[$j])<5)
+			{
+				if($key=~/^$seq_long[$j]/)
+				{
+					$max_value++;
+				}
+			}
+		}
 	}
-	return sum(@iden_sum)/($#iden_sum+1);
+	return (sum(@iden_sum)/($#iden_sum+1),$max_value);
 }
 
 
@@ -719,14 +783,30 @@ sub seq_compare
 }
 sub mid
 {
-    my @list = sort @_;
-    my $count = @list;
-    if( $count == 0 )
-    {
-        return 0;
-        die "mid:reads is empty ";
-    }   
-    return $list[($count-1)/2];
+	my @list = sort @_;
+	my %pos;
+	my $count = @list;
+	if( $count == 0 )
+	{
+		return 0;
+		die "mid:reads is empty ";
+	}   
+	for $i (@list)
+	{
+		$pos{$i}++;
+	}
+	$max_value=max(values %pos);
+	my $max_key="";
+	foreach $key (keys %pos)
+	{
+		if($pos{$key}==$max_value)
+		{
+			$max_key=$key;
+			last;
+		}
+	}
+    return $max_key;
+    #    return $list[($count-1)/2];
 }
 
 sub clip_insertion
@@ -914,3 +994,21 @@ sub std
 	return $soft_val
 	#	return $std_value
 }
+sub sort_reads {
+    my @reads = @_;
+
+    # Sort reads based on the mapping start position (fourth field in SAM format)
+    my @sorted_reads = sort {
+        my @fields_a = split(/\t/, $a);
+        my @fields_b = split(/\t/, $b);
+	$fields_a[5]=~/^(\d+)S/;
+	$len_s_a=$1;
+
+	$fields_b[5]=~/^(\d+)S/;
+	$len_s_b=$1;
+        $fields_a[3]-$len_s_a <=> $fields_b[3]-$len_s_b
+    } @reads;
+
+    return @sorted_reads;
+}
+
