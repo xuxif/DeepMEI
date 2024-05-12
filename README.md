@@ -15,9 +15,6 @@ Further increasing resources to 32 CPUs and 128 GB memory, DeepMEI finishes in 4
 Maximizing the available resources with 64 CPUs and 256 GB memory, DeepMEI completes the task in approximately 40 minutes.
 These timings highlight DeepMEI's enhanced efficiency and scalability, confirming its suitability for high-throughput settings where runtime is critical.
 
-Conda Version Update:
-The Conda version of DeepMEI is v1.6.25. Stay tuned for this update, which will further reduce hardware requirements and improve runtime efficiency, allowing DeepMEI to run smoothly even on personal computers with limited resources.
-
 Recommendation:
 For ease of use and to avoid server configuration and dependency management challenges, we highly recommend using the Docker version of DeepMEI. Our team frequently updates this version to ensure optimal performance across a wide range of computational environments. For instance, DeepMEI can analyze 30x WGS sequence data in significantly reduced times, demonstrating its adaptability and performance on both personal and server-grade computers.
 
