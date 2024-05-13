@@ -109,13 +109,14 @@ Due to the large size of the DeepMEI model file (over 600 MB), it is not feasibl
 
 ```
   mv DeepMEI your_workdir
+```
 
   Add add the location of DeepMEI to your PATH.
-
 ```
   export PATH=/Path/to/DeepMEI/:$PATH
 ```
-  or permanently add'PATH=/Path/to/DeepMEI/:$PATH' to file '~/.bash_profile'
+To add the path permanently, append PATH=/Path/to/DeepMEI/:$PATH to the ~/.bash_profile file.
+
 <br />
 
 3. Input <br/>
