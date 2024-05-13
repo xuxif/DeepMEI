@@ -105,11 +105,17 @@ Due to the large size of the DeepMEI model file (over 600 MB), it is not feasibl
 ```
 <br />
 
-2. Move the deepmei folder to the working directory and do not rename the directory 'DeepMEI'. (Optional） <br />
+2. Move the deepmei folder to the working directory. (Optional） <br />
 
 ```
   mv DeepMEI your_workdir
+
+  Add add the location of DeepMEI to your PATH.
+
 ```
+  export PATH=/Path/to/DeepMEI/:$PATH
+```
+  or permanently add'PATH=/Path/to/DeepMEI/:$PATH' to file '~/.bash_profile'
 <br />
 
 3. Input <br/>
