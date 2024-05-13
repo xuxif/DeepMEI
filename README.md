@@ -6,8 +6,8 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 ##
 We are excited to announce significant updates to DeepMEI, making it more efficient and adaptable for genomic analysis across various computational settings. Our continuous efforts to optimize DeepMEI have led to notable improvements in runtime efficiency, especially in environments with higher computational capacity.
 
-Docker Version Update to v1.6.24:
-The latest Docker version of DeepMEI, v1.6.24, has been enhanced to provide even better performance across a range of hardware configurations. Our testing, using the NA12878 37.3X whole-genome sequencing data, has shown remarkable efficiency improvements:
+Docker Version Update to v1.6.25:
+The latest Docker version of DeepMEI, v1.6.25, has been enhanced to provide even better performance across a range of hardware configurations. Our testing, using the NA12878 37.3X whole-genome sequencing data, has shown remarkable efficiency improvements:
 
 On a system with 12 CPUs and 16 GB of memory, DeepMEI now completes its run in 96 minutes.
 With 32 CPUs and 64 GB memory, the runtime significantly decreases to just under 50 minutes.
@@ -29,11 +29,11 @@ Pull docker image from docker hub
 2. Replace the placeholder 'your_bam_file.bam' with the actual file name 'input.bam'.
   GRCh38:
 ```
-  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i /root/data/you_bam_file.bam  -r 38 -w /root/data/'
+  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r 38 -w /root/data/'
 ```
   hs37d5, hg19 or GRCh37:
 ```
-  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i /root/data/you_bam_file.bam  -r 19 -w /root/data/'
+  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r 19 -w /root/data/'
 ```
 ## Software version requirements (without docker): <br />
 1. samtools 1.15.1 (Other versions need to test whether the "samtools coverage" function is included)<br />
@@ -94,6 +94,7 @@ Due to the large size of the DeepMEI model file (over 600 MB), it is not feasibl
   conda install -c bioconda deepmei -y
  ```
 </br>
+
 ##  Install DeepMEI code from GitHub<br />
 
 ### Run DeepMEI
@@ -104,11 +105,18 @@ Due to the large size of the DeepMEI model file (over 600 MB), it is not feasibl
 ```
 <br />
 
-2. Move the deepmei folder to the working directory and do not rename the directory 'DeepMEI'. (Optional） <br />
+2. Move the deepmei folder to the working directory. (Optional） <br />
 
 ```
   mv DeepMEI your_workdir
 ```
+
+  Add add the location of DeepMEI to your PATH.
+```
+  export PATH=/Path/to/DeepMEI/:$PATH
+```
+To add the path permanently, append PATH=/Path/to/DeepMEI/:$PATH to the ~/.bash_profile file.
+
 <br />
 
 3. Input <br/>

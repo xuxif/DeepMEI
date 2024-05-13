@@ -140,8 +140,8 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
     features_pad=np.array(features_select)
     features_select=[]
 #    print(features_pad.shape)
-    pad_range=[20,19,23,17,25,15,27,13,29,11,31,9,33,7,35,5,37,3,39,1]
     pad_range=[20,21,19,22,18,23,17,24,16,25,15,26,14,27,13,28,12,29,11,30,10,31,9,32,8,33,7,34,6,35,5,36,4,37,3,38,2,39,1]
+    pad_range=[20,19,23,17,25,15,27,13,29,11,31,9,33,7,35,5,37,3,39,1]
     if quick_model=='1':
       pad_range=[20,21,19,22,18,23]
       print('quick mode starting ...')
