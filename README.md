@@ -6,8 +6,8 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 ##
 We are excited to announce significant updates to DeepMEI, making it more efficient and adaptable for genomic analysis across various computational settings. Our continuous efforts to optimize DeepMEI have led to notable improvements in runtime efficiency, especially in environments with higher computational capacity.
 
-Docker Version Update to v1.6.24:
-The latest Docker version of DeepMEI, v1.6.24, has been enhanced to provide even better performance across a range of hardware configurations. Our testing, using the NA12878 37.3X whole-genome sequencing data, has shown remarkable efficiency improvements:
+Docker Version Update to v1.6.25:
+The latest Docker version of DeepMEI, v1.6.25, has been enhanced to provide even better performance across a range of hardware configurations. Our testing, using the NA12878 37.3X whole-genome sequencing data, has shown remarkable efficiency improvements:
 
 On a system with 12 CPUs and 16 GB of memory, DeepMEI now completes its run in 96 minutes.
 With 32 CPUs and 64 GB memory, the runtime significantly decreases to just under 50 minutes.
