@@ -29,11 +29,11 @@ Pull docker image from docker hub
 2. Replace the placeholder 'your_bam_file.bam' with the actual file name 'input.bam'.
   GRCh38:
 ```
-  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i /root/data/you_bam_file.bam  -r 38 -w /root/data/'
+  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r 38 -w /root/data/'
 ```
   hs37d5, hg19 or GRCh37:
 ```
-  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;bash DeepMEI/DeepMEI_model/model_test_batch.sh -i /root/data/you_bam_file.bam  -r 19 -w /root/data/'
+  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r 19 -w /root/data/'
 ```
 ## Software version requirements (without docker): <br />
 1. samtools 1.15.1 (Other versions need to test whether the "samtools coverage" function is included)<br />
