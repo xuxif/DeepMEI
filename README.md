@@ -40,7 +40,7 @@ Pull docker image from docker hub
 2. bedtools v2.30.0<br />
 3. pysam 0.17.0<br />
 4. BWA<br />
-5. RepeatMasker<br />
+5. RepeatMasker 4.1.2<br />
 6. Tensorflow v2.7.0<br />
 7. python 3.8 or 3.9 (Versions above python3.10 may encounter compatibility issues, such as the inability to install tensorflow 2.7.0 correctly）<br />
 8. perl v5.32.1<br />
