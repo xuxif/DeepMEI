@@ -6,13 +6,12 @@ DeepMEI is a convolutional neural network based tool to identify non-reference M
 ##
 We are excited to announce significant updates to DeepMEI, making it more efficient and adaptable for genomic analysis across various computational settings. Our continuous efforts to optimize DeepMEI have led to notable improvements in runtime efficiency, especially in environments with higher computational capacity.
 
-Docker Version Update to v1.6.25:
-The latest Docker version of DeepMEI, v1.6.25, has been enhanced to provide even better performance across a range of hardware configurations. Our testing, using the NA12878 37.3X whole-genome sequencing data, has shown remarkable efficiency improvements:
+Docker Version Update to v1.6.26:
+The latest Docker version of DeepMEI, v1.6.26, has been enhanced to provide even better performance across a range of hardware configurations. Our testing, using the NA12878 37.3X whole-genome sequencing data, has shown remarkable efficiency improvements:
 
-On a system with 12 CPUs and 16 GB of memory, DeepMEI now completes its run in 96 minutes.
-With 32 CPUs and 64 GB memory, the runtime significantly decreases to just under 50 minutes.
-Further increasing resources to 32 CPUs and 128 GB memory, DeepMEI finishes in 48 minutes.
-Maximizing the available resources with 64 CPUs and 256 GB memory, DeepMEI completes the task in approximately 40 minutes.
+On a system with 12 CPUs and 16 GB of memory, DeepMEI now completes its run in 83 minutes.
+With 32 CPUs and 64 GB memory, the runtime significantly decreases to just under 40 minutes.
+Maximizing the available resources with 64 CPUs and 256 GB memory, DeepMEI completes the task in approximately 30 minutes.
 These timings highlight DeepMEI's enhanced efficiency and scalability, confirming its suitability for high-throughput settings where runtime is critical.
 
 Recommendation:
@@ -26,7 +25,9 @@ Pull docker image from docker hub
 ```
 ### To reference your bam/cram file (along with its bai/crai index) located in /home/ubuntu/bam/input.bam, please follow these steps:<br /><br />
 1. Replace the placeholder 'Bind_mount_a_volume_to_include_input_bam_file' with the directory path '/home/ubuntu/bam/' in your command.
-2. Replace the placeholder 'your_bam_file.bam' with the actual file name 'input.bam'.
+2. Replace the placeholder 'your_bam_file.bam' with the actual file name 'input.bam'. DeepMEI  requires input BAM files to be aligned using BWA mem. This requirement ensures optimal performance and accuracy in MEI detection.
+
+
   GRCh38:
 ```
   sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r 38 -w /root/data/'
@@ -46,7 +47,7 @@ Pull docker image from docker hub
 8. perl v5.32.1<br />
 9. bc <br />
 11. Anaconda <br />
-12. xarg v4.5 (v4.8 will prompt parameter conflict）
+12. xarg v4.5 (v4.8 will prompt parameter conflict but still work properly）
 ### Recommended Environment Configuration Steps (with conda and pip)
 1. Insatll Anaconda in your server (Not Miniconda which met errors).
 2. Create a new conda environment 
