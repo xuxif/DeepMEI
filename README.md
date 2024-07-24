@@ -42,7 +42,7 @@ Pull docker image from docker hub
 3. pysam 0.17.0<br />
 4. BWA<br />
 5. RepeatMasker 4.1.2<br />
-6. Tensorflow v2.7.0<br />
+6. Tensorflow v2.7.0 (before v2.12)<br />
 7. python 3.8 or 3.9 (Versions above python3.10 may encounter compatibility issues, such as the inability to install tensorflow 2.7.0 correctly）<br />
 8. perl v5.32.1<br />
 9. bc <br />
@@ -55,6 +55,7 @@ Due to the large size of the DeepMEI model file (over 600 MB), it is not feasibl
   conda activate deepmei
   conda install -c bioconda deepmei -y
  ```
+  Installing DeepMEI with Conda might take a long time, primarily because the installation of RepeatMasker requires significant time to download the library files.
 </br>
 
 ### Configure your server with a .yml file of conda (Recommanded)
@@ -75,7 +76,7 @@ The above steps detail the installation process of all dependencies. We also pro
  ```
  <br />
  
-3. Install Tensorflow 2.7.0
+3. Install Tensorflow 2.7.0 or later ( Do not support Tensorflow 2.12 or later)
 
 ```
    conda install -c conda-forge tensorflow=2.7.0
