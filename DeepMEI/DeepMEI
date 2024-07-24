@@ -5,7 +5,7 @@ usage() {
     exit -1
 }
 
-while getopts i:r:m:b:q:v:w:o:c:j:d:h option
+while getopts i:r:m:b:q:v:w:o:c:j:d:p:h option
 do
    case "${option}"  in  
                 i) bam_file=${OPTARG};;
@@ -19,6 +19,7 @@ do
                 d) depth=${OPTARG};;
                 c) clean=${OPTARG};;
                 j) joint=${OPTARG};;
+                p) parallel=${OPTARG};;
                 h) usage;;
                 ?) usage;;
    esac
@@ -32,6 +33,13 @@ then
 	echo "Joint analysis is false"
 else
 	echo "Joint analysis is true"
+fi
+if [[ ! -n "$parallel" ]]
+then
+	parallel=20
+	echo "Use default 20 threads for analysis"
+else
+	echo "Use $parallel threads for analysis"
 fi
 
 bam_file=`echo $bam_file|perl -F'\t' -alne 'use Cwd(getcwd,cwd);if($_=~/^\//) {print $_;} else { print getcwd()."\/".$_;}'`
@@ -50,7 +58,7 @@ then
 	samtools index $bam_file -@ 20
 fi
 
-base=`echo $0 |perl -F'\t' -alne 'use Cwd(getcwd,cwd);if(not $_=~/^\//) {$_=~s/^\.\///;$_=getcwd()."\/".$_;} $_=~s/\/DeepMEI\/DeepMEI$//; print "$_";'|perl -npe "s/$\///"`
+base=`echo $0 |perl -F'\t' -alne 'use Cwd(getcwd,cwd);if(not $_=~/^\//) {$_=~s/^\.\///;$_=getcwd()."\/".$_;} $_=~s/\/DeepMEI$//; print "$_";'|perl -npe "s/$\///"`
 echo "DeepMEI script base directory: $base"
 
 if [[ ! -n "$REF" ]]
@@ -87,9 +95,10 @@ if [[ ! -n "$output_dir" ]]
 then
 	output_dir=`echo $bam_file|perl -npe "s/(.*\/).*/\1/"`
 fi
-ref_chr=`bash $base/DeepMEI/DeepMEI_model/reference_check.sh $bam_file $REF |cut -f1`
-ref_version=`bash $base/DeepMEI/DeepMEI_model/reference_check.sh $bam_file $REF|cut -f2`
-ref_check_rs=`bash $base/DeepMEI/DeepMEI_model/reference_check.sh $bam_file $REF`
+ref_chr=`bash $base/DeepMEI_model/reference_check.sh $bam_file $REF |cut -f1`
+ref_version=`bash $base/DeepMEI_model/reference_check.sh $bam_file $REF|cut -f2`
+ref_check_rs=`bash $base/DeepMEI_model/reference_check.sh $bam_file $REF`
+
 if [[ "$ref_check_rs" == 2 ]]
 then
         echo "ERROR: Reference sequence length is not match GRCh38, GRCh37 or hg19."
@@ -120,6 +129,7 @@ then
 		region_depth='1:1M-2M'
 	fi
 	depth=`samtools coverage --reference $REF -r $region_depth $bam_file |cut -f7|tail -n 1|perl -npe "s/\.\d+//"`
+	insize_in=`samtools stats --reference $REF $bam_file  $region_depth |grep "insert size average:"|perl -npe "s/.*[ \t]//"`
 	if [[ $depth -eq 0 ]]
 	then
 		depth=25
@@ -135,7 +145,7 @@ fi
 
 
 if [ ! -n "$ME_REF" ]; then
-	ME_REF=${base}/DeepMEI/DeepMEI_model/reference/ME_add_ALU.fa
+	ME_REF=$base/DeepMEI_model/reference/ME_add_ALU.fa
 	echo "Use default mobile element reference:$ME_REF"
 else
 	echo "Load user provided Reference sequence :$ME_REF"
@@ -143,30 +153,32 @@ fi
 
 if [[ $ref_version -eq 38 ]]
 then
-	input_db=$base/DeepMEI/Joint_call/joint_call_hg38.bed
-	ME_bed=$base/DeepMEI/DeepMEI_model/reference/ME_38.bed 
-	head_vcf=$base/DeepMEI/DeepMEI_model/head_38.vcf
+	input_db=$base/Joint_call/joint_call_hg38.bed
+	ME_bed=$base/DeepMEI_model/reference/ME_38.bed 
+	head_vcf=$base/DeepMEI_model/head_38.vcf
+	hd_bed=$base/DeepMEI_script/hg38_hd.bed 
 fi
 if [[ $ref_version -eq 19 ]] && [[ $ref_chr == "nonchr" ]]
 then
-	input_db=$base/DeepMEI/Joint_call/joint_call_hg19_nonchr.bed
-	ME_bed=$base/DeepMEI/DeepMEI_model/reference/ME_nonchr.bed 
-	head_vcf=$base/DeepMEI/DeepMEI_model/head_19_nochr.vcf
+	input_db=$base/Joint_call/joint_call_hg19_nonchr.bed
+	ME_bed=$base/DeepMEI_model/reference/ME_nonchr.bed 
+	head_vcf=$base/DeepMEI_model/head_19_nochr.vcf
+	hd_bed=$base/DeepMEI_script/hg19_nochr_hd.bed 
 fi
 if [[ $ref_version -eq 19 ]] && [[ $ref_chr == "chr" ]]
 then
-	input_db=$base/DeepMEI/Joint_call/joint_call_hg19_chr.bed
-	ME_bed=$base/DeepMEI/DeepMEI_model/reference/ME_chr.bed 
-	head_vcf=$base/DeepMEI/DeepMEI_model/head_19_chr.vcf
+	input_db=$base/Joint_call/joint_call_hg19_chr.bed
+	ME_bed=$base/DeepMEI_model/reference/ME_chr.bed 
+	head_vcf=$base/DeepMEI_model/head_19_chr.vcf
+	hd_bed=$base/DeepMEI_script/hg19_chr_hd.bed 
 fi
-
 
 if [ ! -n "$input_gt" ]; then
 	input_gt=`echo $input_gt|perl -F'\t' -alne 'use Cwd(getcwd,cwd);if($_=~/^\//) {print $_;} else { print getcwd()."\/".$_;}'`
 	echo "Start candidate insertion searching....."
-	cd ${base}/DeepMEI/DeepMEI_script/
-	bash discover_bam_to_candidate.sh $bam_file $ME_REF $output $REF $ME_bed
-	input_gt=${base}/DeepMEI/DeepMEI_script/vsoft_pos/${output}_extract_vsoft.bed
+	cd $base/DeepMEI_script/
+	bash discover_bam_to_candidate.sh $bam_file $ME_REF $output $REF $ME_bed $hd_bed $parallel 
+	input_gt=$base/DeepMEI_script/vsoft_pos/${output}_extract_vsoft.bed
 else
 	no_chr_record=`cat $input_gt|cut -f1|perl -npe "s/^(chr)?\d+//;s/^(chr)?[XY]//"|grep -v "^$"|wc -l`
 	if [[ $no_chr_record -gt 0 ]];then
@@ -191,39 +203,53 @@ if [[ "$joint" == "1" ]]; then
 fi
 
 echo "Starting generate region file......"
-cd ${base}/DeepMEI/data_cluster/
-bash  order_RE_sample.sh $bam_file $ran_num $input_gt $ME_REF $REF 1
+cd $base/data_cluster/
+bash  order_RE_sample.sh $bam_file $ran_num $input_gt $ME_REF $REF 1 $parallel $insize_in
+
+
 rm $input_gt
-cd ${base}/DeepMEI/data_cluster/split_softclipped_sort_$ran_num
+cd $base/data_cluster/split_softclipped_sort_$ran_num
 
-bash ../../Joint_call/filter_before_cnn.sh $ran_num $bam_file $REF
+bash ../../Joint_call/filter_before_cnn.sh $ran_num $bam_file $REF $parallel
 
-bedtools intersect -a <(cat ${base}/DeepMEI/DeepMEI_script/vsoft_pos/${ran_num}_vsoft.bed |perl -F'\t' -alne '$start=$F[1]-50;$end=$F[1]+50;print "$F[0]\t$start\t$end\t$_";') -b filter.bed -wa  -wb |cut -f1-3,12,13|sort -k1,1 -k2,2n|uniq -c |perl -npe "s/ +(.*) (.*)/\2\t\1/"|sort -k1,1 -k2,2n -k6,6nr -k4,4r|perl -F'\t' -alne 'print "$F[3]\t$F[4]\t$F[5]\t$F[0]\t$F[1]\t$F[2]";' |uniq -f3 |perl -F'\t' -alne 'print "$F[3]\t$F[4]\t$F[5]\t0\tHG002\t$F[0]:$F[1]";' >${base}/DeepMEI/DeepMEI_script/vsoft_pos/${ran_num}_vsoft_filter.bed
+cd $base/data_cluster/split_softclipped_sort_$ran_num
+
+#cp  $base/DeepMEI_script/vsoft_pos/${ran_num}_vsoft.bed  $base/DeepMEI_script/vsoft_pos/${ran_num}_vsoft_1.bed 
+bedtools intersect -a <(cat $base/DeepMEI_script/vsoft_pos/${ran_num}_vsoft.bed |perl -F'\t' -alne '$start=$F[1]-50;$end=$F[1]+50;print "$F[0]\t$start\t$end\t$_";') -b filter.bed -wa  -wb |cut -f1-3,12,13|sort -k1,1 -k2,2n|uniq -c |perl -npe "s/ +(.*) (.*)/\2\t\1/"|sort -k1,1 -k2,2n -k6,6nr -k4,4r|perl -F'\t' -alne 'print "$F[3]\t$F[4]\t$F[5]\t$F[0]\t$F[1]\t$F[2]";' |uniq -f3 |perl -F'\t' -alne 'print "$F[3]\t$F[4]\t$F[5]\t0\tHG002\t$F[0]:$F[1]";' >${base}/DeepMEI_script/vsoft_pos/${ran_num}_vsoft_filter.bed
 
 bedtools intersect \
-	-a <(ls ${base}/DeepMEI/data_cluster/split_softclipped_${ran_num}/|grep "_BPinfo.txt"|while read tmp_bp;do cat ${base}/DeepMEI/data_cluster/split_softclipped_${ran_num}/$tmp_bp;done |perl -npe "s/:/\t/;s/\-/\t/" |perl -F'\t' -alne '$dis=abs((($F[1]+$F[2])-($F[3]+$F[4]))/2);print "$dis\t$F[5]\t$F[6]\t$F[7]\t$F[8]\t$F[9]\t$F[10]\t$F[11]\t$F[0]\t$F[1]\t$F[2]\t$F[3]\t$F[4]";'  |sort -k9,9 -k12,12n -k1,1n |uniq -f 11 |cut -f2-|perl -F'\t' -alne 'print "$F[7]\t$F[8]\t$F[9]\t$F[10]\t$F[11]\t$F[0]\t$F[1]\t$F[2]\t$F[3]\t$F[4]\t$F[5]\t$F[6]";') \
+	-a <(ls $base/data_cluster/split_softclipped_${ran_num}/|grep "_BPinfo.txt"|while read tmp_bp;do cat $base/data_cluster/split_softclipped_${ran_num}/$tmp_bp;done |perl -npe "s/:/\t/;s/\-/\t/" |perl -F'\t' -alne '$dis=abs((($F[1]+$F[2])-($F[3]+$F[4]))/2);print "$dis\t$F[5]\t$F[6]\t$F[7]\t$F[8]\t$F[9]\t$F[10]\t$F[11]\t$F[0]\t$F[1]\t$F[2]\t$F[3]\t$F[4]";'  |sort -k9,9 -k12,12n -k1,1n |uniq -f 11 |cut -f2-|perl -F'\t' -alne 'print "$F[7]\t$F[8]\t$F[9]\t$F[10]\t$F[11]\t$F[0]\t$F[1]\t$F[2]\t$F[3]\t$F[4]\t$F[5]\t$F[6]";') \
 	-b filter.bed -wa -u  \
 	>${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed
 
 
-#cat ${base}/DeepMEI/DeepMEI_script/vsoft_pos/${ran_num}_vsoft_filter.bed |while read chr start end info;do num=`grep -m 1 "^$chr"$'\t'"$start"$'\t'"$end"$'\t' ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed |wc -l`;pos=`grep -m 1 "^$chr"$'\t'"$start"$'\t'"$end"$'\t' ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed |perl -F'\t' -alne '$pos=int(($F[3]+$F[4])/2);print "$pos";'`;if [[ $num -gt 0 ]];then echo -e "$chr\t$pos\t$info";fi done   >${output_dir}/DeepMEI_output/$output/deepmei_${output}_input.bed
-cat ${base}/DeepMEI/DeepMEI_script/vsoft_pos/${ran_num}_vsoft_filter.bed |while read chr start end info;do num=`grep -m 1 "^$chr"$'\t'"$start"$'\t'"$end"$'\t' ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed |wc -l`;pos=`grep -m 1 "^$chr"$'\t'"$start"$'\t'"$end"$'\t' ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed |perl -F'\t' -alne '$pos=int(($F[3]+$F[4])/2);print "$pos";'`;if [[ $num -gt 0 ]];then echo -e "$chr\t$pos\t$info";fi done   >${output_dir}/DeepMEI_output/$output/deepmei_${output}_input.bed
+#cat $base/DeepMEI_script/vsoft_pos/${ran_num}_vsoft_filter.bed |while read chr start end info;do num=`grep -m 1 "^$chr"$'\t'"$start"$'\t'"$end"$'\t' ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed |wc -l`;pos=`grep -m 1 "^$chr"$'\t'"$start"$'\t'"$end"$'\t' ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed |perl -F'\t' -alne '$pos=int(($F[3]+$F[4])/2);print "$pos";'`;if [[ $num -gt 0 ]];then echo -e "$chr\t$pos\t$info";fi done   >${output_dir}/DeepMEI_output/$output/deepmei_${output}_input.bed
+cat $base/DeepMEI_script/vsoft_pos/${ran_num}_vsoft_filter.bed |while read chr start end info;do num=`grep -m 1 "^$chr"$'\t'"$start"$'\t'"$end"$'\t' ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed |wc -l`;pos=`grep -m 1 "^$chr"$'\t'"$start"$'\t'"$end"$'\t' ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed |perl -F'\t' -alne '$pos=int(($F[3]+$F[4])/2);print "$pos";'`;if [[ $num -gt 0 ]];then echo -e "$chr\t$pos\t$info";fi done   >${output_dir}/DeepMEI_output/$output/deepmei_${output}_input.bed
 
 cat ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed|perl -F'\t' -alne '$pos=int(($F[3]+$F[4])/2);$F[1]=$pos-50;$F[2]=$pos+50;print join("\t",@F);' |python ../add_MEtype.py >${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP.bed
+
 
 rm ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP_raw.bed
 
 input_gt=${output_dir}/DeepMEI_output/$output/deepmei_${output}_input.bed
 cd ..
-bash  order_RE_sample.sh $bam_file $ran_num $input_gt $ME_REF $REF 2
-input_gt=${base}/DeepMEI/DeepMEI_script/vsoft_pos/${ran_num}_vsoft.bed
+wait
+
+echo "Starting generate region file again  ......"
+bash  order_RE_sample.sh $bam_file $ran_num $input_gt $ME_REF $REF 2 $parallel $insize_in
+
+echo "Extending inserted sequencing  ......"
+cd $base/data_cluster/split_softclipped_sort_$ran_num
+bash ../filter_ass.sh $bam_file $REF $ran_num $output_dir/DeepMEI_output/$output $parallel 
 
 echo "Starting DeepMEI prediction ......"
-cd ${base}/DeepMEI/DeepMEI_model
+input_gt=$base/DeepMEI_script/vsoft_pos/${ran_num}_vsoft.bed
+
+cd $base/DeepMEI_model
 
 threshold_model=`cat depth_threshold.txt|grep "^$depth	"|cut -f2`
 #cp  $input_gt input_gt.txt
-#python model_test.py       -i $input_gt -o ${base}/DeepMEI/DeepMEI_model/batch_cdgc/deepmei_${output}_predict.txt -s ${base}/DeepMEI/data_cluster/split_softclipped_sort_$ran_num -r $REF  -q $quick_model
+#python model_test.py       -i $input_gt -o $base/DeepMEI_model/batch_cdgc/deepmei_${output}_predict.txt -s $base/data_cluster/split_softclipped_sort_$ran_num -r $REF  -q $quick_model
 multi_process=`ls multi_process/|wc -l`
 while [[ $multi_process -ge 5 ]]
 do
@@ -236,7 +262,7 @@ if [[ ! -f "weights/val_best_model/variables/variables.data-00000-of-00001" ]]
 then
 	cat weights/val_best_model/variables/variables.data-00000-of-00001a* >weights/val_best_model/variables/variables.data-00000-of-00001
 fi
-python model_test_refine.py -i $input_gt -o ${base}/DeepMEI/DeepMEI_model/batch_cdgc/deepmei_${output}_predict.txt -s ${base}/DeepMEI/data_cluster/split_softclipped_sort_$ran_num -r $REF  -q $quick_model -t $threshold_model
+python model_test_refine.py -i $input_gt -o $base/DeepMEI_model/batch_cdgc/deepmei_${output}_predict.txt -s $base/data_cluster/split_softclipped_sort_$ran_num -r $REF  -q $quick_model -t $threshold_model
 
 rm multi_process/${output}.txt
 
@@ -244,9 +270,13 @@ rm multi_process/${output}.txt
 
 #bash transPredictTobed.sh batch_cdgc/deepmei_${output}_predict.txt batch_cdgc/deepmei_${output}.bed $threshold_model
 
+
+cd $base/DeepMEI_model
+
 cat batch_cdgc/deepmei_${output}_predict.txt |cut -f1,2,5,6,8 |perl -F'\t' -alne '$start=$F[1]-50;$end=$F[1]+50;print "$F[0]\t$start\t$end\t$F[2]\t$F[3]\t$F[4]";' |sort -k1,1 -k2,2n |uniq >../final_vcf/batch_cdgc/deepmei_${output}_cnn.bed
 
-cd ${base}/DeepMEI/data_cluster/split_softclipped_sort_$ran_num
+
+cd $base/data_cluster/split_softclipped_sort_$ran_num
 bedtools intersect -a ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP.bed -b ../../final_vcf/batch_cdgc/deepmei_${output}_cnn.bed -wa |sort |uniq |cut -f 1-5|while read chr start end left right
 do
         ex_start=$(($start-150))
@@ -295,18 +325,16 @@ then
 else
 	cat ../../final_vcf/batch_cdgc/deepmei_${output}_cnn.bed > ../../final_vcf/batch_cdgc/deepmei_${output}.bed
 fi
-cd ${base}/DeepMEI/DeepMEI_model
+cd $base/DeepMEI_model
 
 #1       FRAM:SINE/Alu   2       65.93868112158563       11031133        11031153        20      14      25      0.0136986301369863      0       9       0
 
-cat <(cat $head_vcf|perl -npe "s/SAMPLE$/${output}/") >${base}/DeepMEI/final_vcf/batch_cdgc/${output}.vcf
-cat ../final_vcf/batch_cdgc/deepmei_${output}.bed |while read chr start end info;do echo -ne "$chr\t$info\t"; grep "^$chr"$'\t'"$start"$'\t'"$end"$'\t'  ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP.bed |cut -f4- |head -n 1 ;done |perl -F'\t' -alne '$F[2]=~s/1/0\/1/;$F[2]=~s/2/1\/1/;$pos=$F[4];if($F[13] eq "none") {$me=$F[1];} else {$me=$F[13];i} $me=~s/:.*//;if($F[4]>$F[5]){$pos=$F[5];};print "$F[0]\t$pos\t.\tN\t<INS:ME:$me>\t.\tPASS\tSVTYPE=INS;clipPosLeft=$F[4];clipPosRight=$F[5];PS=$F[3];ME=$F[13];TSD_len=$F[6];clipLeftNum=$F[7];clipRightNum=$F[8];clipRate=$F[9];HclipLeftNum=$F[10];HclipRightNum=$F[11];polyN_direction=$F[12];\tGT\t$F[2]";'|sort -k1,1 -k2,2n >>${base}/DeepMEI/final_vcf/batch_cdgc/${output}.vcf
+cat <(cat $head_vcf|perl -npe "s/SAMPLE$/${output}/") >$base/final_vcf/batch_cdgc/${output}.vcf
+bedtools intersect -a ../final_vcf/batch_cdgc/deepmei_${output}.bed -b /${output_dir}/DeepMEI_output/$output/filter_ass.bed -loj |cut -f1-6,10,12,13 |perl -F'\t' -alne 'if($F[8] ne ".") {$F[3]=$F[8];} print join("\t",@F)'|cut -f1-8 |while read chr start end info;do echo -ne "$chr\t$info\t"; grep "^$chr"$'\t'"$start"$'\t'"$end"$'\t'  ${output_dir}/DeepMEI_output/$output/deepmei_${output}_BP.bed |cut -f4- |head -n 1 ;done |perl -F'\t' -alne '$F[2]=~s/1/0\/1/;$F[2]=~s/2/1\/1/;$pos=$F[6];$me=$F[1]; $me=~s/#.*//;if($F[6]>$F[7]){$pos=$F[7];};if(($F[5] ne "dis_related") and (($F[15]=~/left/ and $F[15]=~/right/) or ($F[15]=~/left/ and $F[14]==1) |($F[15]=~/right/ and $F[14]==-1) | ($F[5]=~/only/) )) {$me_int="ME_only";} else{$me_int="ME_related";}  ;print "$F[0]\t$pos\t.\tN\t<INS:ME:$me>\t.\tPASS\tSVTYPE=INS;clipPosLeft=$F[6];clipPosRight=$F[7];PS=$F[3];ME=$F[15];TSD_len=$F[8];clipLeftNum=$F[9];clipRightNum=$F[10];clipRate=$F[11];HclipLeftNum=$F[12];HclipRightNum=$F[13];polyN_direction=$F[14];ME_int=$me_int;\tGT\t$F[2]";'|sort -k1,1 -k2,2n >>$base/final_vcf/batch_cdgc/${output}.vcf
 
 
-#cat <(cat ../head.vcf|perl -npe "s/SAMPLE$/${output}/") \
-#<(bedtools intersect -a ${base}/DeepMEI/final_vcf/batch_cdgc/deepmei_${output}.final.vcf.bed -b <(cat ${base}/DeepMEI/data_cluster/split_softclipped_${ran_num}/*_BPinfo.txt |perl -npe "s/:.*?\t/\t/"|perl -F'\t' -alne 'if($F[1]>$F[2]) {print "$F[0]\t$F[2]\t$F[1]\t$_";} else { print "$F[0]\t$F[1]\t$F[2]\t$_";}') -wa -wb |cut -f4-9,13-|perl -F'\t' -alne '$F[0]=~s/1/0\/1/;$F[0]=~s/2/1\/1/;print "$F[3]\t$F[4]\t.\tN\t<INS:ME:$F[2]>\t.\tPASS\tSVTYPE=INS;clipPosLeft=$F[4];clipPosRight=$F[5];PS=$F[1];ME=$F[2];TSD_len=$F[6];clipLeftNum=$F[7];clipRightNum=$F[8];clipRate=$F[9];HclipLeftNum=$F[10];HclipRightNum=$F[11];polyN_direction=$F[12]\tGT\t$F[0]";'|sort -k1,1 -k2,2n) >${base}/DeepMEI/final_vcf/batch_cdgc/${output}.vcf
 
-cd ${base}/DeepMEI/final_vcf/
+cd $base/final_vcf/
 num_output=`cat batch_cdgc/deepmei_${output}.bed|wc -l `
 if [[ $num_output -gt 10 ]]
 then
@@ -314,23 +342,24 @@ then
 	samtools index batch_cdgc/deepmei_${output}.bam
 fi
 
-mv ${base}/DeepMEI/final_vcf/batch_cdgc/*${output}*.bed ${output_dir}/DeepMEI_output/$output/
-mv ${base}/DeepMEI/final_vcf/batch_cdgc/${output}.vcf ${output_dir}/DeepMEI_output/$output/
-mv ${base}/DeepMEI/final_vcf/batch_cdgc/*${output}*.bam ${output_dir}/DeepMEI_output/$output/
-mv ${base}/DeepMEI/final_vcf/batch_cdgc/*${output}*.bam.bai ${output_dir}/DeepMEI_output/$output/
+mv $base/final_vcf/batch_cdgc/*${output}*.bed ${output_dir}/DeepMEI_output/$output/
+mv $base/final_vcf/batch_cdgc/${output}.vcf ${output_dir}/DeepMEI_output/$output/
+mv $base/final_vcf/batch_cdgc/*${output}*.bam ${output_dir}/DeepMEI_output/$output/
+mv $base/final_vcf/batch_cdgc/*${output}*.bam.bai ${output_dir}/DeepMEI_output/$output/
+chmod 777 ${output_dir}/DeepMEI_output/$output/*
 if [ ! -n "$clean" ]; then
-	cd ${base}/DeepMEI/data_cluster/ 
+	cd $base/data_cluster/ 
 	echo "#$clean#"
 	echo "cleaning tmp file ......"
 	rm -rf split_softclipped_sort_$ran_num regions_$ran_num split_softclipped_$ran_num head_$ran_num.sam 
 
-	cd ${base}/DeepMEI/DeepMEI_script/ 
-	rm vsoft_pos/${output}_raw_vsoft.bed candidate_pos/${output}_soft_candidate.txt  vsoft_pos/${ran_num}_vsoft_filter.bed
+	cd $base/DeepMEI_script/ 
+	rm vsoft_pos/${output}_raw_vsoft.bed candidate_pos/${output}_soft_candidate.txt  vsoft_pos/${ran_num}_vsoft_filter.bed vsoft_pos/${ran_num}_vsoft.bed  candidate_pos/${output}_bk.txt  2>/dev/null
 
-	rm  ${base}/DeepMEI/DeepMEI_model/batch_cdgc/deepmei_${output}_predict.txt
+	rm  $base/DeepMEI_model/batch_cdgc/deepmei_${output}_predict.txt
 else
 	echo "Random number is $ran_num Temp file not be remove....."
-	echo "${base}/DeepMEI/data_cluster/split_softclipped_sort_$ran_num"
-	echo "${base}/DeepMEI/DeepMEI_model/batch_cdgc/deepmei_${output}_predict.txt"
+	echo "$base/data_cluster/split_softclipped_sort_$ran_num"
+	echo "$base/DeepMEI_model/batch_cdgc/deepmei_${output}_predict.txt"
 	echo "$input_gt"
 fi
