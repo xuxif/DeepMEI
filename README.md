@@ -48,7 +48,24 @@ Pull docker image from docker hub
 9. bc <br />
 11. Anaconda <br />
 12. xarg v4.5 (v4.8 will prompt parameter conflict but still work properly）
-### Recommended Environment Configuration Steps (with conda and pip)
+### Configure your server with bioconda (Recommanded)
+Due to the large size of the DeepMEI model file (over 600 MB), it is not feasible to include it in the conda package. Consequently, the bioconda package for DeepMEI only contains the necessary environment configuration requirements. Users will need to download the DeepMEI code separately from GitHub. To set up the required environment, users should run the following command:
+ ```
+  conda env create -n deepmei 
+  conda activate deepmei
+  conda install -c bioconda deepmei -y
+ ```
+</br>
+
+### Configure your server with a .yml file of conda (Recommanded)
+The above steps detail the installation process of all dependencies. We also provide a conda environment configuration file (deepmei.yml).Users only need to run the following code to configure the required environment.
+ ```
+   conda env create -f deepmei.yml
+ ```
+</br>
+
+
+### Manual configure your server with conda and pip
 1. Insatll Anaconda in your server (Not Miniconda which met errors).
 2. Create a new conda environment 
  
@@ -79,22 +96,6 @@ Pull docker image from docker hub
   conda install samtools bedtools  bwa -y
   conda install repeatmasker -y
   ```
-
-#### Configure your server with a .yml file of conda (Optional)
-The above steps detail the installation process of all dependencies. We also provide a conda environment configuration file (deepmei.yml).Users only need to run the following code to configure the required environment.
- ```
-   conda env create -f deepmei.yml
- ```
-</br>
-
-#### Configure your server with bioconda (Optional)
-Due to the large size of the DeepMEI model file (over 600 MB), it is not feasible to include it in the conda package. Consequently, the bioconda package for DeepMEI only contains the necessary environment configuration requirements. Users will need to download the DeepMEI code separately from GitHub. To set up the required environment, users should run the following command:
- ```
-  conda env create -n deepmei 
-  conda activate deepmei
-  conda install -c bioconda deepmei -y
- ```
-</br>
 
 ##  Install DeepMEI code from GitHub<br />
 
