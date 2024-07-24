@@ -2,6 +2,7 @@ ran_num=$1
 record=$2
 bam_file=$3
 REF=$4
+step=$5
 left=`cat ../split_softclipped_$ran_num/${record}_BPinfo.txt |cut -f2`
 right=`cat ../split_softclipped_$ran_num/${record}_BPinfo.txt |cut -f3`
 
@@ -18,7 +19,7 @@ region=`echo $record|perl -npe "s/HG002_//;s/_map.*//"`
 #fi
 
 
-python ../get_dis_mate_sequence.py $bam_file $region $left $right $REF >${record}_discordant.txt
+python ../get_dis_mate_sequence.py $bam_file $region $left $right $REF $step >${record}_discordant.txt
 #num=`cat ${record}_discordant_region.txt|wc -l`
 #if [[ $num -gt 0 ]]
 #then
