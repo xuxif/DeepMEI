@@ -267,6 +267,4 @@ dependencies:
   - zlib=1.2.13=hd590300_5
   - zstandard=0.22.0=py39h81c9582_1
   - zstd=1.5.6=ha6fb4c9_0
-  - pip:
-      - pysam==0.17.0
 prefix: /home/xuxf/anaconda3/envs/deepmei
