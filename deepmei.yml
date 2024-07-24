@@ -221,6 +221,7 @@ dependencies:
   - pycparser=2.22=pyhd8ed1ab_0
   - pyjwt=2.8.0=pyhd8ed1ab_1
   - pyopenssl=23.2.0=pyhd8ed1ab_1
+  - pysam=0.17.0=py39h20405f9_1
   - pysocks=1.7.1=pyha2e5f31_6
   - python=3.9.15=h47a2c10_0_cpython
   - python-flatbuffers=2.0=pyhd8ed1ab_0
