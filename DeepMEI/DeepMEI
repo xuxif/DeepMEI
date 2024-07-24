@@ -173,6 +173,13 @@ then
 	hd_bed=$base/DeepMEI_script/hg19_chr_hd.bed 
 fi
 
+if [[ ! -f "$base/tmp_repeatmasker_init.fa" ]]
+then
+        echo "Initing RepeatMasker..."
+        echo -e ">seq_test\nACTGACTGACTGACTGACTG" > $base/tmp_repeatmasker_init.fa
+        bash $base/data_cluster/repeatmask.sh $base/tmp_repeatmasker_init.fa 2>&1 >/dev/null
+fi
+
 if [ ! -n "$input_gt" ]; then
 	input_gt=`echo $input_gt|perl -F'\t' -alne 'use Cwd(getcwd,cwd);if($_=~/^\//) {print $_;} else { print getcwd()."\/".$_;}'`
 	echo "Start candidate insertion searching....."
