@@ -20,6 +20,7 @@ dependencies:
   - astunparse=1.6.3=pyhd8ed1ab_0
   - async-timeout=4.0.3=pyhd8ed1ab_0
   - attrs=23.2.0=pyh71513ae_0
+  - bedtools=2.31.1=hf5e1c6e_2
   - blast=2.15.0=pl5321h6f7f691_1
   - blast-legacy=2.2.26=h9ee0642_3
   - blinker=1.8.2=pyhd8ed1ab_0
