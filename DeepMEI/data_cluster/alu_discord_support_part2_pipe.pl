@@ -15,6 +15,7 @@ $bam_file="$ARGV[1]";
 $REF="$ARGV[2]";
 $step="$ARGV[3]";
 $record_i=0;
+$insize_in=$ARGV[4];
 while(<STDIN>)
 {	
 	chomp();
@@ -37,19 +38,16 @@ while(<STDIN>)
 	}
 	elsif($step ==2)
 	{
-	#	@ori=`samtools view -T $REF $bam_file $record |head --lines=200 |perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
-		$_=<STDIN>;
 		@ori=`samtools view -T $REF $bam_file $record |head --lines=1000 |perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
-#		`rm $ori_dir/HG002_${record}.sam `;
 	}
-#	print "$#ori\n@ori\n";
+	#	@ori_dis=`bash remap_discordant.sh $REF $bam_file $ran_num $record `;
 	$right_poly_AT_total=0;
 	$left_poly_AT_total=0;
 	my @group_ref=(),@group_left=(),@group_right=();
 	#@ori=`samtools view -T $REF $bam_file $record |head --lines=200 `; #|perl modify_read_base.pl |perl get_second_alignment.pl  $bam_file $REF `;
 	my @read_ori=();
-	my @left_map_start=() ,@left_map_end=(),@left_clip_seq=(),@left_clip_len=(),@left_read_i=(),@left_hard_read_i=();
-	my @right_map_start=() ,@right_map_end=(),@right_clip_seq=(),@right_clip_len=(),@right_read_i=(),@right_hard_read_i=();
+	my @left_map_start=() ,@left_map_end=(),@left_clip_seq=(),@left_clip_len=(),@left_read_i=(),@left_hard_read_i=(),,@left_clip_qual=();
+	my @right_map_start=() ,@right_map_end=(),@right_clip_seq=(),@right_clip_len=(),@right_read_i=(),@right_hard_read_i=(),@right_clip_qual=();
 	my $i=0,$match_ref=0,$left_i=0,$right_i=0,$left_hard_i=0,$right_hard_i=0;
 	my $match_hard_right=0,$match_hard_right=0;
 	
@@ -111,7 +109,32 @@ while(<STDIN>)
 					$tmp_cigar=~s/[A-Z]/#/g;
 					$clip_len=~s/.*?(\d+)S.*/$1/;
 					$clip_seq=substr($read[9],-$clip_len);
-					$clip_len_ran=int(rand(50));
+					$quality=substr($read[10],-$clip_len);
+
+					$right_map_start[$right_i]=$map_start ;
+					$right_map_end[$right_i]=$map_end;
+					$right_clip_seq[$right_i]=$clip_seq;
+					$right_clip_len[$right_i]=$clip_len;
+					if(length($quality)>0)
+					{
+						#$right_clip_qual[$right_i]=sum(map { ord($_) - 33 } split('', $quality))/length($quality);
+						@right_clip_qual_t=map { ord($_) - 33 } split('', $quality);
+						for($qual_t=0;$qual_t<=$#right_clip_qual_t;$qual_t++)
+						{
+							if($right_clip_qual_t[$qual_t]<30)
+							{
+								#$right_clip_qual[$right_i]=$qual_t-1;
+								last;
+							}
+						}
+						$right_clip_qual[$right_i]=$qual_t-1;
+					}
+					else
+					{
+						$right_clip_qual[$right_i]=0;
+					}
+
+					$right_read_i[$right_i]=$i;
 					if($clip_len>50) 
 					{
 						$read[5]=~s/(\d+)S$/50S/;
@@ -121,11 +144,6 @@ while(<STDIN>)
 						$clip_seq=substr($clip_seq,0,$clip_len);
 						$read_ori[$i]=join("\t",@read);
 					}
-					$right_map_start[$right_i]=$map_start ;
-					$right_map_end[$right_i]=$map_end;
-					$right_clip_seq[$right_i]=$clip_seq;
-					$right_clip_len[$right_i]=$clip_len;
-					$right_read_i[$right_i]=$i;
 					$right_i++;
 				}
 				else
@@ -144,7 +162,33 @@ while(<STDIN>)
 					#$clip_len=sum(split(/#/,$tmp_cigar));
 					$clip_len=~s/.*?(\d+)S.*/$1/;
 					$clip_seq=substr($read[9],0,$clip_len);
-					$clip_len_ran=int(rand(50));
+					$quality=substr($read[10],0,$clip_len);
+
+					$left_map_start[$left_i]=$map_start ;
+					$left_map_end[$left_i]=$map_end;
+					$left_clip_seq[$left_i]=$clip_seq;
+					$left_clip_len[$left_i]=$clip_len;
+					if(length($quality)>0)
+					{
+						#$left_clip_qual[$left_i]=sum(map { ord($_) - 33 } split('', $quality))/length($quality);
+						@left_clip_qual_t=map { ord($_) - 33 } split('', $quality);
+						for($qual_t=$#left_clip_qual_t;$qual_t>=0;$qual_t--)
+						{
+							if($left_clip_qual_t[$qual_t]<30)
+							{
+								#print "$record\t$left_clip_qual[$left_i]\t$clip_seq\t".join(" ",@left_clip_qual_t)."\n";
+								last;
+							}
+						}
+						#$left_clip_qual[$left_i]=$#left_clip_qual_t+1;
+						$left_clip_qual[$left_i]=$#left_clip_qual_t-$qual_t-1;
+						#print "$record\t$left_clip_qual[$left_i]\t$clip_seq\t".join(" ",@left_clip_qual_t)."\n";
+					}
+					else
+					{
+						$left_clip_qual[$left_i]=0;
+					}
+					$left_read_i[$left_i]=$i;
 					if($clip_len>50) 
 					{
 						$read[5]=~s/^(\d+)S/50S/;
@@ -155,11 +199,6 @@ while(<STDIN>)
 						$read_ori[$i]=join("\t",@read);
 					}
 					
-					$left_map_start[$left_i]=$map_start ;
-					$left_map_end[$left_i]=$map_end;
-					$left_clip_seq[$left_i]=$clip_seq;
-					$left_clip_len[$left_i]=$clip_len;
-					$left_read_i[$left_i]=$i;
 					$left_i++;
 				}
 				else
@@ -338,6 +377,9 @@ while(<STDIN>)
 	$right_print=0;
 	@group_left_clip=();
 	@group_right_clip=();
+
+	@group_left_clip_qual=();
+	@group_right_clip_qual=();
 	if($left_poly_AT_total>$right_poly_AT_total and sum(@left_has_polyAT)/($#left_clip_seq+1)>0.6)
 	{
 		$polyAT_direction=-1;
@@ -355,6 +397,7 @@ while(<STDIN>)
 				#print MPCL join("\t",@tmp_read_ori)."\n";
 				push @group_left,join("\t",@tmp_read_ori);
 				push (@group_left_clip,($left_clip_seq[$i]));
+				push (@group_left_clip_qual,($left_clip_qual[$i]));
 				$left_print++;
 			}
 			else
@@ -383,6 +426,7 @@ while(<STDIN>)
 				#print MPCR join("\t",@tmp_read_ori)."\n";
 				push @group_right,join("\t",@tmp_read_ori);
 				push (@group_right_clip,($right_clip_seq[$i]));
+				push (@group_right_clip_qual,($right_clip_qual[$i]));
 				$right_print++;
 			}
 			else
@@ -443,6 +487,7 @@ while(<STDIN>)
 				#print MPCL join("\t",@tmp_read_ori)."\n";
 				push @group_left,join("\t",@tmp_read_ori);
 				push (@group_left_clip,($left_clip_seq[$i]));
+				push (@group_left_clip_qual,($left_clip_qual[$i]));
 				$left_print++;
 			}
 		}
@@ -491,6 +536,7 @@ while(<STDIN>)
 				#print MPCR join("\t",@tmp_read_ori)."\n";
 				push @group_right,join("\t",@tmp_read_ori);
 				push (@group_right_clip,($right_clip_seq[$i]));
+				push (@group_right_clip_qual,($right_clip_qual[$i]));
 				$right_print++;
 			}
 		}
@@ -501,6 +547,9 @@ while(<STDIN>)
 	my $clip_reads_count=0;
 	my $reads_count=0;
 	my $clip_both_count=0;
+	my $insize=0;
+	my $insize_count=0;
+	my $insize_mean=0;
 	foreach $read_i (@group_right)
 	{
 		@read_info=split(/\t/,$read_i);
@@ -513,7 +562,17 @@ while(<STDIN>)
 			$clip_both_count++;
 		}
 		$reads_count++;
+		if($read_info[1] % 32<16 and abs($F[8])<2000 and abs($F[8])>0)
+		{
+			$insize=$insize+abs($F[8]);
+			$insize_count++;
+		}
 	}
+	if($insize_mean>0)
+	{
+		$insize_mean=$insize/$insize_count;
+	}
+
 	foreach $read_i (@group_left)
 	{
 		@read_info=split(/\t/,$read_i);
@@ -540,11 +599,35 @@ while(<STDIN>)
 	#my $clip_both=`bash clip_both.sh ${out_dir}/${record}_mapClipL.sam ${out_dir}/${record}_mapClipR.sam `;
 	#                        -b <(cat ../data_cluster/tmp_3_tsd.bed |perl -F'\t' -alne 'if($F[1]>=-10 and $F[1] <=50 and $F[2]>=2 and $F[3]>=2 and $F[4]<0.3) {print "$_";}' |cut -f1|perl -npe "s/HG002_//"|cut -d':' -f 2-|perl -npe "s/:/\t/;s/\-/\t/" ) \
 	my $tsd_len=$right_map_mid-$left_map_mid;
+	my $group_left_clip_hs='NNNNNN',$group_right_clip_hs='NNNNN';
+	for($i=0;$i<=$#group_left_clip;$i++)
+	{
+		#print "if($group_left_clip_qual[$i]>20 and length($group_left_clip[$i]) > length($group_left_clip_hs))\n";
+		if($group_left_clip_qual[$i]>  length($group_left_clip_hs))
+		{
+			$group_left_clip_hs=substr($group_left_clip[$i],-1*$group_left_clip_qual[$i]);
+			#print "$record\t$left_clip_qual[$i]\t$group_left_clip_hs\n";
+		}
+	}
+	for($i=0;$i<=$#group_right_clip;$i++)
+	{
+		#print "if($group_right_clip_qual[$i]>20 and length($group_right_clip[$i]) > length($group_right_clip_hs))\n";
+		if($group_right_clip_qual[$i]>  length($group_right_clip_hs))
+		{
+			$group_right_clip_hs=substr($group_right_clip[$i],0,$group_right_clip_qual[$i]);
+		}
+	}
 	my ($iden_sum_left,$max_clip_left)=&clip_seq_iden(-1,@group_left_clip);
 	my ($iden_sum_right,$max_clip_right)=&clip_seq_iden(1,@group_right_clip);
 	#	print "if($tsd_len>=-20 and  $tsd_len<=70 and $max_clip_left>2 and $max_clip_right>2 and $clip_both<0.3 and $iden_sum_left>=0.8 and  $iden_sum_right>=0.9)\t $left_map_mid $right_map_mid\n";
 	#	print "$record\tif($tsd_len>=-20 and  $tsd_len<=70 and (($max_clip_left>2 and $max_clip_right>2) or $max_clip_left + $max_clip_right>8) and $clip_both<0.3 and $iden_sum_left>=0.8 and  $iden_sum_right>=0.8)\n";
-	if($tsd_len>=-20 and  $tsd_len<=70 and (($max_clip_left>2 and $max_clip_right>2) or $max_clip_left + $max_clip_right>8) and $clip_both<0.3 and $iden_sum_left>=0.8 and  $iden_sum_right>=0.8)
+	#	if($tsd_len>70)
+	#{	
+	#	open(BPINF2,">${out_dir}/test_HG002_${record}_BPinfo.txt");
+	#	print BPINF2 "$record\t$left_map_mid\t$right_map_mid\t$tsd_len\t$max_clip_left\t$max_clip_right\n";
+	#}
+	#	if((($max_clip_left>2 and $max_clip_right>2) or $max_clip_left + $max_clip_right>8) 
+	if($tsd_len>=-20 and  $tsd_len<=70 and (($max_clip_left>2 and $max_clip_right>2) or $max_clip_left + $max_clip_right>8) and $clip_both<0.3 and $iden_sum_left>=0.8 and  $iden_sum_right>=0.8 and $insize_mean <=$insize_in+100)
 	{
 		open(BPINF,">${out_dir}/HG002_${record}_BPinfo.txt");
 		print BPINF "$record\t$left_map_mid\t$right_map_mid\t";
@@ -559,6 +642,12 @@ while(<STDIN>)
 		if($tsd_seq=~/^.?A{10,}.?$/ or $tsd_seq=~/^.?T{10,}.?$/ or $tsd_seq=~/^.?C{10,}.?$/ or $tsd_seq=~/^.?G{10,}.?$/  or $tsd_seq=~/^.?(AT){4,}.?$/ )
 		{
 		}	
+		#$left_map_mid_t=$left_map_mid+50;
+		#$left_ref_seq=`bash getfastq.sh $REF $record_split[0] $left_map_mid $left_map_mid_t`;
+		#$right_map_mid_t=$right_map_mid-50;
+		#$right_ref_seq=`bash getfastq.sh $REF $record_split[0] $right_map_mid_t $right_map_mid`;
+
+
 	        my $map_mid_all=int(($left_map_mid+$right_map_mid)/2);
 
 		`cat head_$ran_num.sam >${out_dir_sort}/HG002_${record}_mapRef.sam`;
@@ -617,9 +706,13 @@ while(<STDIN>)
 	    	close(MPCR);
 	    	close(MPCL);
 	    	close(MPR);
-		print BPINF "$tsd_len\t$clipL_chrom\t$clipR_chrom\t$clip_both\t$left_hard_supp_count\t$right_hard_supp_count\t$polyAT_direction\n";
+		print BPINF "$tsd_len\t$clipL_chrom\t$clipR_chrom\t$clip_both\t$left_hard_supp_count\t$right_hard_supp_count\t$polyAT_direction\t$group_left_clip_hs\t$group_right_clip_hs\n";
 		close(BPINF);
 	}
+	#	elsif($tsd_len<-20 or $tsd_len>70)
+	#	{
+		#		print "missed\t$record\t$left_map_mid\t$right_map_mid\t$tsd_len>=-20 and  $tsd_len<=70 and (($max_clip_left>2 and $max_clip_right>2) or $max_clip_left + $max_clip_right>8) and $clip_both<0.3 and $iden_sum_left>=0.8 and  $iden_sum_right>=0.8\n";
+		#	}
 }
 #print "left:$left_print\tright:$right_print\n";
 sub clip_seq_iden

@@ -12,76 +12,64 @@ while(<STDIN>)
 	}
 	if($F[5]=~/H/)
 	{
-	foreach $i (@F)
-	{
-	$sa_str=$i;
-	if($sa_str=~s/SA:Z://)
-	{
-		@sa_all=split(/;/,$sa_str);
-		foreach $j (@sa_all)
-		{ if($j=~/H/) {}
-			else{
-				@sa=split(/,/,$j);
-				$sa_start=$sa[1]-1;
-				$sa_end=$sa[1]+1;
-				$se_pos="$sa[0]:$sa_start-$sa_end";
-				@se_ori=split(/\t/,`samtools view $bam_file -T $ref $se_pos |grep $F[0]|cut -f10,11|head -n 1`);
-				$se_seq=$se_ori[0];
-				$se_qual=$se_ori[1];
-				$se_qual=~s/\n$//;
-				$se_seq_rev=reverse $se_seq;
-				$se_seq_rev=~s/A/M/g;
-				$se_seq_rev=~s/T/A/g;
-				$se_seq_rev=~s/M/T/g;
-				$se_seq_rev=~s/C/M/g;
-				$se_seq_rev=~s/G/C/g;
-				$se_seq_rev=~s/M/G/g;
-				if($se_seq=~/$F[9]/)
-				{
+		foreach $i (@F)
+		{
+			$sa_str=$i;
+			if($sa_str=~s/SA:Z://)
+			{
+				@sa_all=split(/;/,$sa_str);
+				foreach $j (@sa_all)
+				{ 
+					if($j=~/H/) {}
+					else{
+						@sa=split(/,/,$j);
+						$sa_start=$sa[1]-1;
+						$sa_end=$sa[1]+1;
+						$se_pos="$sa[0]:$sa_start-$sa_end";
+						@se_ori=split(/\t/,`samtools view $bam_file -T $ref $se_pos |grep $F[0]|cut -f10,11|head -n 1`);
+						$se_seq=$se_ori[0];
+						$se_qual=$se_ori[1];
+						$se_qual=~s/\n$//;
+						$se_seq_rev=reverse $se_seq;
+						$se_seq_rev=~s/A/M/g;$se_seq_rev=~s/T/A/g;$se_seq_rev=~s/M/T/g;$se_seq_rev=~s/C/M/g;$se_seq_rev=~s/G/C/g; $se_seq_rev=~s/M/G/g;
+						if($se_seq=~/$F[9]/){}
+						elsif($se_seq_rev=~/$F[9]/)
+						{
+							$se_qual=reverse $se_qual;
+							$se_seq=$se_seq_rev;
+						}
+						else {next;}
+						$cigar_m=$F[5];
+						$cigar_m=~s/(.*?)(\d+)H(.*)/\1\2S\3/;
+						$clip_len=$2;
+						if($F[5]=~/H$/)
+						{
+							$se_seq=~/$F[9](.*)/;
+							$clip_seq=$1;
+							$clip_seq_len=length($clip_seq);
+							$clip_qual=substr($se_qual,-1*$clip_seq_len);
+							$F[9]="$F[9]$clip_seq";
+							$F[10]="$F[10]$clip_qual";
+						}
+						else
+						{
+							$se_seq=~/(.*)$F[9]/;
+							$clip_seq=$1;
+							$clip_seq_len=length($clip_seq);
+							$clip_qual=substr($se_qual,0,$clip_seq_len);
+							$F[9]="$clip_seq$F[9]";
+							$F[10]="$clip_qual$F[10]";
+						}
+						if($clip_len != length($clip_seq)) { last;}
+						$F[5]=$cigar_m;
+						print join("\t",@F); print "\n";
+						$print=1; next;
+					}
 				}
-				elsif($se_seq_rev=~/$F[9]/)
-				{
-					$se_qual=reverse $se_qual;
-					$se_seq=$se_seq_rev;
-				}
-				else {
-					next;
-				}
-				$cigar_m=$F[5];
-				$cigar_m=~s/(.*?)(\d+)H(.*)/\1\2S\3/;
-				$clip_len=$2;
-				if($F[5]=~/H$/)
-				{
-					$se_seq=~/$F[9](.*)/;
-					$clip_seq=$1;
-					$clip_seq_len=length($clip_seq);
-					$clip_qual=substr($se_qual,-1*$clip_seq_len);
-					$F[9]="$F[9]$clip_seq";
-					$F[10]="$F[10]$clip_qual";
-				}
-				else
-				{
-					$se_seq=~/(.*)$F[9]/;
-					$clip_seq=$1;
-					$clip_seq_len=length($clip_seq);
-					$clip_qual=substr($se_qual,0,$clip_seq_len);
-					$F[9]="$clip_seq$F[9]";
-					$F[10]="$clip_qual$F[10]";
-				}
-				if($clip_len != length($clip_seq))
-				{
-					last;
-				}
-#				print "$clip_len\t$clip_seq\t$clip_qual\n";
-				$F[5]=$cigar_m;
-				print join("\t",@F);
-				print "\n";
-				$print=1;
-				next;
+				last;
 			}
 		}
-		next;
-	}}}
+	}
 	if($print ==0)
 	{
 		print "$_\n";

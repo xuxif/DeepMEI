@@ -19,10 +19,13 @@ $i=0;
 my %READ;
 $last_pos=0;
 $record_i=0;
+$read_c=0;
 print "$record[$record_i][0]:$record[$record_i][1]-$record[$record_i][2]\t$record[$record_i][3]\n";
 $d_chr=$record[$record_i][0];$d_start=$record[$record_i][1];$d_end=$record[$record_i][2];
+
 foreach $read_i (<STDIN>)
 {
+	$read_c++;
 	chomp($read_i);
 	@F=split(/\t/,$read_i);
 	$cigar=$F[5];
@@ -39,8 +42,12 @@ foreach $read_i (<STDIN>)
 		$record_i++;
 		$d_chr=$record[$record_i][0];$d_start=$record[$record_i][1];$d_end=$record[$record_i][2];
 		print "\n$record[$record_i][0]:$record[$record_i][1]-$record[$record_i][2]\t$record[$record_i][3]\n";
+		$read_c=0;
 	}
-	print "$read_i##123##456##";
+	if($read_c<1000)
+	{
+		print "$read_i##123##456##";
+	}
 	$last_pos=$F[3];
 }
 print "\n";
