@@ -33,7 +33,6 @@ while(<STDIN>)
                 $clip_pos=$name[8];
         }
 	
-
 #if ($tmp1[2]%4 >=2
 	unless($line[2] eq "*" )
 	{
