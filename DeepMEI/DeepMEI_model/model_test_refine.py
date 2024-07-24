@@ -47,7 +47,6 @@ for opt, arg in opts:
     threshold_score= arg
   elif opt in ("-r", "--reference"):
     hparams.reference= arg
-#    print(arg)
 def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quick_model,use_existing_data=True,seed=1):
   random.seed(seed)
   tf.random.set_seed(seed)
@@ -106,8 +105,11 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
   record_use_total=[]
   run_count=len(genotype_total)
   run_i=1
+  if quick_model=='1':
+    print('quick mode starting ...')
+  print(f"Total run: {run_count}, current run: ",end='')
   for genotype_batch in genotype_total:
-    print(f"Total run: {run_count}, current run: {run_i}")
+    print(f" {run_i}",end='')
     run_i=run_i+1
     features=[]
     t,record_use,feature=make_alu_examples(hparams,genotype_batch,0,95)
@@ -122,7 +124,7 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
     features_select=[]
     record_use_select=[]
     for predict_ori_each,record_use_ori_each,feature_ori_each in zip(predict_ori,record_use,features):
-        if predict_ori_each[0]<0.6:
+        if predict_ori_each[0]<0.8:
           features_select.append(feature_ori_each)
           record_use_select.append(record_use_ori_each)
     features=[]
@@ -135,16 +137,15 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
           for genotype_each in f:
             chr,pos,gt,data_type,me=genotype_each.strip().split('\t')
             res_f.write(genotype_each.strip()+'\t0\t0\t0\t0\t0\t0\n')
-      sys.exit('not find any insertion')
+      sys.exit('Do not find any mobile element insertion')
 
     features_pad=np.array(features_select)
     features_select=[]
 #    print(features_pad.shape)
-    pad_range=[20,21,19,22,18,23,17,24,16,25,15,26,14,27,13,28,12,29,11,30,10,31,9,32,8,33,7,34,6,35,5,36,4,37,3,38,2,39,1]
     pad_range=[20,19,23,17,25,15,27,13,29,11,31,9,33,7,35,5,37,3,39,1]
+    pad_range=[20,21,19,22,18,23,17,24,16,25,15,26,14,27,13,28,12,29,11,30,10,31,9,32,8,33,7,34,6,35,5,36,4,37,3,38,2,39,1]
     if quick_model=='1':
       pad_range=[20,21,19,22,18,23]
-      print('quick mode starting ...')
     for padding in pad_range:
 #      print('padd:'+str(padding))
       t=len(features_pad)
@@ -158,7 +159,7 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
           predict.append(predict_pad_each)
           record.append(record_pad_each)
           pad_i.append(pad_each_i)
-        if 0.6<predict_pad_each[0]:
+        if 0.8<predict_pad_each[0]:
           pad_i.append(pad_each_i)
         pad_each_i=pad_each_i+1
       features_pad=np.delete(features_pad,pad_i,0)

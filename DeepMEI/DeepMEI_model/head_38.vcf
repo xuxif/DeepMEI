@@ -34,6 +34,7 @@
 ##INFO=<ID=clipPosRight,Number=A,Type=Integer,Description="Right breakpoint position">
 ##INFO=<ID=PS,Number=A,Type=Integer,Description="Phred score of DeepMEI">
 ##INFO=<ID=ME,Number=1,Type=String,Description="Inserted mobile element type">
+##INFO=<ID=ME_int,Number=1,Type=String,Description="MEI integrity">
 ##INFO=<ID=ME_clue,Number=1,Type=String,Description="Soft-clipped sequence on either the left or the right end of read, aligned with the consensus of ME">
 ##INFO=<ID=TSD_len,Number=A,Type=Integer,Description="The distence between two breakpoint">
 ##INFO=<ID=clipLeftNum,Number=A,Type=Integer,Description="Supporting reads of MEIs with soft-clipped CIGAR in left ">
