@@ -1,4 +1,5 @@
-
+echo 'A new version of DeepMEI has been released, and the usage instructions have also changed. Please check the GitHub page for details: https://github.com/xuxif/DeepMEI'
+exit -1
 usage() {
     echo "Usage:"
     echo "  bash model_test_batch.sh [-i bamfile] [-r reference] [-b bedfile]  "
