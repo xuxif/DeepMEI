@@ -120,7 +120,7 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
 #    features_pad=features
     test_dataset = tf.data.Dataset.from_tensor_slices((features[:,:,20:371,:], np.array([0]*t)))
     test_dataset = test_dataset.batch(batch_size=128)
-    predict_ori=model.predict(test_dataset)
+    predict_ori=model.predict(test_dataset,verbose=0)
     features_select=[]
     record_use_select=[]
     for predict_ori_each,record_use_ori_each,feature_ori_each in zip(predict_ori,record_use,features):
@@ -151,7 +151,7 @@ def run_test(hparams,load_model,load_model_ckpt,genotype_file,predict_file, quic
       t=len(features_pad)
       test_dataset = tf.data.Dataset.from_tensor_slices((features_pad[:,:,padding:(351+padding),:], np.array([0]*t))).batch(batch_size=128)
 #      print('new image generate finished')
-      predict_pad=model.predict(test_dataset)
+      predict_pad=model.predict(test_dataset,verbose=0)
       pad_each_i=0
       pad_i=[]
       for predict_pad_each,record_pad_each in zip(predict_pad,record_use_select):
