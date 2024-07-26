@@ -49,7 +49,7 @@ Pull docker image from docker hub
 11. Anaconda <br />
 12. xarg v4.5 (v4.8 will prompt parameter conflict but still work properly）
 
-### Configure your server with bioconda (Recommanded)
+### Configure your server with Conda (Recommanded)
 Due to the large size of the DeepMEI model file (over 600 MB), it is not feasible to include it in the conda package. Users will need to download the DeepMEI code separately from GitHub. To set up the required environment, users should run the following command:
  ```
   conda create -n deepmei -c conda-forge -c bioconda 'tensorflow>=2.7.0,<2.12' 'samtools>=1.15' 'pysam=0.17' 'bedtools=2.30' 'bwa>=0.7.17' 'repeatmasker=4.1.2' 'python>=3.8,<3.10' 'perl=5.32' -y
@@ -58,7 +58,7 @@ Due to the large size of the DeepMEI model file (over 600 MB), it is not feasibl
   Installing DeepMEI with Conda might take a long time, primarily because the installation of RepeatMasker requires significant time to download the library files.
 </br>
 
-### Configure your server with a .yml file of conda (Recommanded)
+### Configure your server with a .yml file of Conda (Recommanded)
 The above steps detail the installation process of all dependencies. We also provide a conda environment configuration file (deepmei.yml).Users only need to run the following code to configure the required environment.
  ```
    conda env create -f deepmei.yml
