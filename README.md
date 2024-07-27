@@ -134,7 +134,7 @@ To add the path permanently, append PATH=/Path/to/DeepMEI/:$PATH to the ~/.bash_
  ```
    conda activate deepmei
    cd /path/to/DeepMEI
-  /path/to/DeepMEI/DeepMEI -i /path/to/your/bam_file/ -r /path/to/reference_sequence.fa -w  /path/to/DeepMEI output directory/
+  /path/to/DeepMEI/DeepMEI -i /path/to/your/bam_file/ -r /path/to/reference_sequence.fa
  ```
  <br />
  
