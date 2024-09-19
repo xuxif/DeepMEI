@@ -150,6 +150,7 @@ To add the path permanently, append PATH=/Path/to/DeepMEI/:$PATH to the ~/.bash_
 -  -b use existed candidate MEIs (skip candidate detection)
 -  -m mobile element consensus sequence (fastq format and indexed with BWA)
 -  -o output file name
+-  -p threads available
 -  -w script directory 
 -  -d sequencing depth (optinal or calculate in chr 1M-2M)
 -  -c remove all tempory file (default remove)
