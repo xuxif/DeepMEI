@@ -26,15 +26,15 @@ region=`samtools view $out_dir/${record}_discordant.sam |perl -F'\t' -alne 'if($
 
  samtools view --threads 2 -b $input_bam $region \
 	| samtools view -O BAM  -N <(echo "$read_name"|perl -npe "s/ /\n/g" )  \
-	|samtools fastq  /dev/stdin  -o $out_dir/${record}_discordant_and_mate_reads_R1.fastq 2>/dev/null
+	|samtools fastq  /dev/stdin  -o $out_dir/${record}_discordant_and_mate_reads_R1.fastq 
 
 
 samtools faidx $REF $chrom:$((pos-200))-$((pos+200)) > $out_dir/${record}_insertion_site_region.fasta
-bwa index $out_dir/${record}_insertion_site_region.fasta 2>/dev/null 
+bwa index $out_dir/${record}_insertion_site_region.fasta 
 
 cat \
 	<(samtools view -H $input_bam) \
-	<(bwa mem $out_dir/${record}_insertion_site_region.fasta $out_dir/${record}_discordant_and_mate_reads_R1.fastq 2>/dev/null \
+	<(bwa mem $out_dir/${record}_insertion_site_region.fasta $out_dir/${record}_discordant_and_mate_reads_R1.fastq \
 	| samtools view -F 4 |perl -F'\t' -alne '$F[2]=~/(.*):(\d+)-(\d+)/;$F[2]=$1;$F[3]=$2+$F[3];print join("\t",@F);' |sort -k1,1 -k2,2n |uniq )  \
  >$out_dir/${record}_insertion_dis_align.sam
 

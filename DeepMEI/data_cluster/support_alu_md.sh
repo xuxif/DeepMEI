@@ -7,7 +7,7 @@ dir=regions
 #ls regions/|while read file;do
 file=$1
 	out_file=`echo $file|perl -npe "s/\.bam//"`
-	samtools fasta $dir/$file 2>/dev/null | \
+	samtools fasta $dir/$file  | \
 	blastn -db ME_ref.fa -query /dev/stdin -evalue 0.0001 -outfmt "6 qseqid"  -out /dev/stdout |perl -npe "s/\/[12]$//"|sort |uniq >blastout/${out_file}.txt
 	comm -23 <(samtools view $dir/$file|cut -f1,6|grep "S"|cut -f1|sort) <(cat blastout/${out_file}.txt)  |while read id
 	do 

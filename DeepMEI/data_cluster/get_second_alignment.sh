@@ -10,5 +10,5 @@ then
 else
 	flag=64
 fi
-#samtools view -f $flag -T $REF $file $region -O SAM |grep $name 2>/dev/null |cut -f10|perl -npe "s/^/>$record\n/"|perl -npe "s/_mapClip.*//"
-samtools view -h  -f $flag -T $REF $file $region |samtools fasta -n /dev/stdin 2>/dev/null|grep -m 1 -A1 "$name" 2>/dev/null |tail -n 1 |perl -npe "s/^/>$record\n/"
+#samtools view -f $flag -T $REF $file $region -O SAM |grep $name |cut -f10|perl -npe "s/^/>$record\n/"|perl -npe "s/_mapClip.*//"
+samtools view -h  -f $flag -T $REF $file $region |samtools fasta -n /dev/stdin |grep -m 1 -A1 "$name"  |tail -n 1 |perl -npe "s/^/>$record\n/"

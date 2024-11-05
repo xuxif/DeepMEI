@@ -14,7 +14,7 @@ cat ${record}_map*.sam |grep -f <(cut -f2 ${record}_discordant.txt) |cut -f3,7,8
 num=`cat ${record}_discordant_region.txt|wc -l`
 if [[ $num -gt 0 ]]
 then
-samtools view -h  -T $REF $bam_file `cat ${record}_discordant_region.txt|perl -npe "s/\n/ /"|perl -npe "s/$/\n/"`|samtools fasta 2>/dev/null|perl ../filterByNameAddname.pl ${record}_discordant.txt >${record}_discordant.fa
+samtools view -h  -T $REF $bam_file `cat ${record}_discordant_region.txt|perl -npe "s/\n/ /"|perl -npe "s/$/\n/"`|samtools fasta |perl ../filterByNameAddname.pl ${record}_discordant.txt >${record}_discordant.fa
 fi
 
 

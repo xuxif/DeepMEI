@@ -25,8 +25,8 @@ while(<STDIN>)
 	@F=split(/\t/,$_);
 	$name=$F[0];
 	$flag=$F[1];
-	$seq=$F[2];
-	$qual=$F[3];
+	$seq=$F[9];
+	$qual=$F[10];
 	$read_r=1;
 	if($flag%256 >=128)
 	{

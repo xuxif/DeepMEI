@@ -380,7 +380,16 @@ while(<STDIN>)
 
 	@group_left_clip_qual=();
 	@group_right_clip_qual=();
+	$poly_AT_sig=0;
 	if($left_poly_AT_total>$right_poly_AT_total and sum(@left_has_polyAT)/($#left_clip_seq+1)>0.6)
+	{
+		$poly_AT_sig=-1;
+	}
+	elsif($left_poly_AT_total<$right_poly_AT_total and sum(@right_has_polyAT)/($#right_clip_seq+1)>0.6)
+	{
+		$poly_AT_sig=1;
+	}
+	if($poly_AT_sig==-1)
 	{
 		$polyAT_direction=-1;
 		for($i=0;$i<@left_has_polyAT;$i++)
@@ -409,7 +418,7 @@ while(<STDIN>)
 			}
 		}
 	}
-	elsif($left_poly_AT_total<$right_poly_AT_total and sum(@right_has_polyAT)/($#right_clip_seq+1)>0.6)
+	elsif($poly_AT_sig==1)
 	{
 		$polyAT_direction=1;
 		for($i=0;$i<@right_has_polyAT;$i++)
@@ -438,7 +447,8 @@ while(<STDIN>)
 			}
 		}
 	}
-	
+
+	#	print "$polyAT_direction\t$left_poly_AT_total<$right_poly_AT_total\n";	
 	my @left_map_alu=();
 	my @right_map_alu=();
 	my @blastout=();
@@ -627,7 +637,7 @@ while(<STDIN>)
 	#	print BPINF2 "$record\t$left_map_mid\t$right_map_mid\t$tsd_len\t$max_clip_left\t$max_clip_right\n";
 	#}
 	#	if((($max_clip_left>2 and $max_clip_right>2) or $max_clip_left + $max_clip_right>8) 
-	if($tsd_len>=-20 and  $tsd_len<=70 and (($max_clip_left>2 and $max_clip_right>2) or $max_clip_left + $max_clip_right>8) and $clip_both<0.3 and $iden_sum_left>=0.8 and  $iden_sum_right>=0.8 and $insize_mean <=$insize_in+100)
+	if($tsd_len>=-20 and $tsd_len<=70 and (($max_clip_left>2 and $max_clip_right>2) or $max_clip_left + $max_clip_right>8) and $clip_both<0.3 and $iden_sum_left>=0.8 and  $iden_sum_right>=0.8 and $insize_mean <=$insize_in+100)
 	{
 		open(BPINF,">${out_dir}/HG002_${record}_BPinfo.txt");
 		print BPINF "$record\t$left_map_mid\t$right_map_mid\t";
@@ -649,6 +659,13 @@ while(<STDIN>)
 
 
 	        my $map_mid_all=int(($left_map_mid+$right_map_mid)/2);
+		@group_left=&sort_reads(@group_left);
+		@group_right=&sort_reads(@group_right);
+		@group_ref=&sort_reads(@group_ref);
+		if($#group_ref>=48)
+		{
+			@group_ref=&subset_reads($map_mid_all,@group_ref);
+		}
 
 		`cat head_$ran_num.sam >${out_dir_sort}/HG002_${record}_mapRef.sam`;
 		`cat head_$ran_num.sam >${out_dir_sort}/HG002_${record}_mapClipL.sam`;
@@ -658,9 +675,6 @@ while(<STDIN>)
 	    	open(MPCR,">>${out_dir_sort}/HG002_${record}_mapClipR.sam");
 	    	print "$record_split[0]\t".int(($record_split[1]+$record_split[2])/2)."\t0\tHG002\t$me_type\n"; #$iden_sum_left\t$iden_sum_right\n";
 
-		@group_left=&sort_reads(@group_left);
-		@group_right=&sort_reads(@group_right);
-		@group_ref=&sort_reads(@group_ref);
 
 	    	foreach $read_i (@group_ref)
 	    	{
@@ -706,6 +720,21 @@ while(<STDIN>)
 	    	close(MPCR);
 	    	close(MPCL);
 	    	close(MPR);
+		if($polyAT_direction==0)
+		{
+			if($left_poly_AT_total>$right_poly_AT_total)
+			{
+				$polyAT_direction=-1;
+			}
+			elsif($left_poly_AT_total<$right_poly_AT_total)
+			{
+				$polyAT_direction=1;
+			}
+			elsif($left_poly_AT_total==$right_poly_AT_total and $right_poly_AT_total!=0)
+			{
+				$polyAT_direction=1;
+			}
+		}
 		print BPINF "$tsd_len\t$clipL_chrom\t$clipR_chrom\t$clip_both\t$left_hard_supp_count\t$right_hard_supp_count\t$polyAT_direction\t$group_left_clip_hs\t$group_right_clip_hs\n";
 		close(BPINF);
 	}
@@ -1103,5 +1132,47 @@ sub sort_reads {
     } @reads;
 
     return @sorted_reads;
+}
+
+#HISEQ1:19:H8VDAADXX:2:2104:1883:52073   99      8       134972088       60      148M    =       134972457       517     TACCCAAGTAATCTTACTTAGAATAAAGATATTCACAAATATGGCTTCCTGTTTGGACATAATTACTTGAGGGAAACTTTAAATGAGAATTTCATGGAAAAAAAACCCACAGAAAAACAAAAAACGAGATAACAGCAAGAATATGTGT    CCCFFFFFHHHHHJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJIJJJJJJJJHHHHHHFFFEFFFEEEEEEEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEEEEB    NM:i:0  MD:Z:148        MC:Z:148M       AS:i:148        XS:i:22
+sub subset_reads {
+	my ($mid,@reads)=@_;
+	$mid=$mid+20;
+	my $i=0;
+	my @overlap_l=();
+	my @overlap_r=();
+	foreach $read_i(@reads)
+	{
+		my @F=split(/\t/,$read_i);
+		my $start2 = $F[3];
+		my $cigar = $F[5];
+		my $end2 = $start2;
+		while ($cigar =~ /(\d+)([MIDNSHPX=])/g) 
+		{
+			my $length = $1;
+			my $type = $2;
+			if ($type eq 'M' || $type eq 'D' || $type eq '=' || $type eq 'X') {
+				$end2 += $length;
+			}
+		}
+		$overlap_t=int(($start2+$end2)/2)-$mid;
+		if($overlap_t<0)
+		{
+			unshift @overlap_l,$read_i;
+		}
+		else
+		{
+			push @overlap_r,$read_i;
+		}
+	}
+	my @select_read=();
+	for($i=0;$i<=$#overlap_l,$i<=$#overlap_r,$i<40;$i++)
+	{
+		unshift @select_read,$overlap_l[$i];
+		push @select_read,$overlap_r[$i];
+	}
+
+
+	return @select_read;
 }
 

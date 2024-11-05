@@ -13,6 +13,8 @@ then
 fi
 
 mkdir regions_$ran_num split_softclipped_$ran_num split_softclipped_sort_$ran_num
+
+
 #samtools view -T $REF -H $bam_file|grep -f chr_list.txt  >head_$ran_num.sam
 if [[ $step -eq 1 ]]
 then
@@ -41,6 +43,7 @@ ls regions_$ran_num/split*input|xargs  -P $parallel -I{} bash extrac_region_batc
 #sample='HG002';cat $input_gt|perl -F'\t' -alne '$start=$F[1]-50;$start2=$F[1]-100;;$end=$F[1]+50;$end2=$F[1]+100;print "$F[0]:$start-$end";' |xargs -n 1 -P 20 -I record bash extract_region_sample.sh record $bam_file $sample regions_$ran_num $REF
 #sample='HG002';cat $input_gt|perl -F'\t' -alne '$start=$F[1]-50;$start2=$F[1]-100;;$end=$F[1]+50;$end2=$F[1]+100;print "$F[0]:$start-$end\t$F[4]";' |xargs -n 2 -I{} -P 40 perl alu_discord_support_part2_sample_refine_vt.pl {} $ran_num $bam_file $REF $step >../DeepMEI_script/vsoft_pos/${ran_num}_vsoft.bed #${ran_num}_vsoft.bed
 echo "generate record finished!"
+
 #ls regions_$ran_num |xargs -n 1 -I {} -P 40 bash discover_bam_to_candidate_sample.sh {} $ran_num $ME_REF
 
 ##根据RM结果和polyA/T信号，对所有reads进行分组输出
@@ -71,7 +74,6 @@ ls |sed -n '/mapRef.sam$/p'|while read record ;do cat <(cat ../head_$ran_num.sam
 
 #ls |sed -n '/mapRef.sam$/p'|while read record ;do cat <(cat ../head_$ran_num.sam) <(grep -v "^@" $record |sort -k4,4n|perl -F'\t' -alne  '$md=$F[12];$md=~s/.*://;$md=~s/[^ATCG\n]//g;$md=length($md);if($md<=5){print "$_";}' ) > ../split_softclipped_sort_$ran_num/$record;rm $record ;done &
 wait
-
 #cd ../split_softclipped_sort_$ran_num
 #ls |sed -n '/mapRef.sam$/p'|perl -npe "s/_mapRef.sam//"|xargs -n 1 -P 20 -I{} perl ../downsample_sam.pl {} $ran_num
 

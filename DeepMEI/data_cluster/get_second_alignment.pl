@@ -20,13 +20,17 @@ while(<STDIN>)
 				@sa_all=split(/;/,$sa_str);
 				foreach $j (@sa_all)
 				{ 
+					#print "$j\n";
 					if($j=~/H/) {}
 					else{
 						@sa=split(/,/,$j);
-						$sa_start=$sa[1]-1;
-						$sa_end=$sa[1]+1;
+						$sa[3]=~/(\d+)M/;
+						$sa_mp_len=$1;
+						$sa_start=$sa[1]-3+$sa_mp_len;
+						$sa_end=$sa_start+2;
 						$se_pos="$sa[0]:$sa_start-$sa_end";
-						@se_ori=split(/\t/,`samtools view $bam_file -T $ref $se_pos |grep $F[0]|cut -f10,11|head -n 1`);
+						@se_ori=split(/\t/,`samtools view $bam_file -T $ref $se_pos |grep -m 1 $F[0]|cut -f10,11|head -n 1`);
+						#print "samtools view $bam_file -T $ref $se_pos |grep -m 1 $F[0]|cut -f10,11|head -n 1";
 						$se_seq=$se_ori[0];
 						$se_qual=$se_ori[1];
 						$se_qual=~s/\n$//;
@@ -60,10 +64,11 @@ while(<STDIN>)
 							$F[9]="$clip_seq$F[9]";
 							$F[10]="$clip_qual$F[10]";
 						}
-						if($clip_len != length($clip_seq)) { last;}
+						if($clip_len != length($clip_seq)) { next;}
 						$F[5]=$cigar_m;
 						print join("\t",@F); print "\n";
-						$print=1; next;
+						$print=1; last;
+						#print "$F[0]\t$print\n";
 					}
 				}
 				last;
