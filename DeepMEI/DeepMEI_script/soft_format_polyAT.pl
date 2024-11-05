@@ -57,5 +57,5 @@ while(<STDIN>)
 	#	}
 }
 close(DIS);
-print `bash ins_can.sh tmp_$ARGV[1]/dis_${ran_num}.tsv $ARGV[0] $ARGV[2]`;
+print `bash ins_can.sh tmp_$ARGV[1]/dis_${ran_num}.tsv $ARGV[0] $ARGV[2] $ARGV[3]`;
 #`rm dis_${ran_num}.tsv`

@@ -24,14 +24,14 @@ then
 fi
 extractSC=SE-MEI/extractSoftclipped
 
-rm -rf tmp_$output 2>/dev/null
+rm -rf tmp_$output 
 mkdir tmp_$output
-samtools view -T $REF -H $input_file |grep "SN:" |cut -f2,3|perl -npe "s/SN://;s/LN://"|perl -npe "s/\t/\t1\t/"|grep -f chr_list.txt|bedtools makewindows -b /dev/stdin -w 50000000 |perl -npe "s/\t/:/;s/\t/\-/"|xargs  -I{} -P $parallel bash extract_candidate.sh $input_file $split_len $ME_REF $parallel {} $REF ${output}
+samtools view -T $REF -H $input_file |grep "SN:" |cut -f2,3|perl -npe "s/SN://;s/LN://"|perl -npe "s/\t/\t1\t/"|grep -f chr_list.txt|bedtools makewindows -b /dev/stdin -w 50000000 |perl -npe "s/\t/:/;s/\t/\-/"|xargs  -I{} -P $parallel bash extract_candidate.sh $input_file $split_len $ME_REF $parallel {} $REF ${output} $ME_bed
 cat tmp_$output/soft_candidate_${output}*.txt >candidate_pos/${output}_soft_candidate.txt
 #cat tmp_$output/bk_*.tsv  >candidate_pos/${output}_bk.txt
-rm -rf tmp_$output 2>/dev/null
+rm -rf tmp_$output 
 #$extractSC -l $split_len $input_file > /dev/stdout | \
-#$BWA mem -t $parallel -k 19 -r 1.5 -c 100000 -m 50 -T 20 -h 10000 -a -Y -M $ME_REF /dev/stdin  > /dev/stdout 2>/dev/null | \
+#$BWA mem -t $parallel -k 19 -r 1.5 -c 100000 -m 50 -T 20 -h 10000 -a -Y -M $ME_REF /dev/stdin  > /dev/stdout | \
 #perl soft_format_polyAT.pl > candidate_pos/${output}_soft_candidate.txt
 #cat candidate_pos/${output}_soft_candidate.txt | \
 #sort -k1,1 -k2,2n candidate_pos/${output}_soft_candidate.txt |cut -f1,2,4|grep -f chr_list.txt|perl -F'\t' -alne '$start=$F[1]-1;$end=$F[1];$F[2]=~s/_.*//;print "$F[0]\t$start\t$end\t$F[2]";' |bedtools merge -d 20 -c 4,4 -o collapse,count|perl add_sr_count.pl  >vsoft_pos/${output}_raw_vsoft.bed

@@ -23,7 +23,7 @@ ls $out_dir/|grep "^split"|grep "input$" | while read file;do cat $out_dir/tmp_$
 samtools view -T $REF -H $bam_file |grep "SN:" |cut -f2,3|perl -npe "s/SN://;s/LN://"|perl -npe "s/\t/\t1\t/"|grep -f chr_list.txt|bedtools makewindows -b /dev/stdin -w 50000000 |perl -npe "s/\t/:/;s/\t/\-/"|xargs -n 1 -P 20 -I{} samtools view $bam_file -N $out_dir/read_dis_list.txt -o $out_dir/{}.sam {}
 
 
- cat <(samtools view -H $bam_file) <(cat $out_dir/*.sam |perl -F'\t' -alne '$chrom=$F[2];$pos=$F[3];if($F[6] ne "=") {$F[2]=$F[6];} $F[3]=$F[7];$F[6]=$chrom;$F[7]=$pos;print join("\t",@F);')|samtools sort -@ 20 --write-index -o $out_dir/dis_read.bam 2>/dev/null
+ cat <(samtools view -H $bam_file) <(cat $out_dir/*.sam |perl -F'\t' -alne '$chrom=$F[2];$pos=$F[3];if($F[6] ne "=") {$F[2]=$F[6];} $F[3]=$F[7];$F[6]=$chrom;$F[7]=$pos;print join("\t",@F);')|samtools sort -@ 20 --write-index -o $out_dir/dis_read.bam 
 
 rm $out_dir/*.sam
 
