@@ -2,7 +2,6 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-import tensorflow as tf
 import pysam
 import sys
 import getopt
@@ -11,6 +10,8 @@ import math
 import os.path
 import numpy as np
 import datetime, os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras import callbacks

@@ -10,5 +10,5 @@ cd -
 #cat $input_gt|while read record;
 #do
 rm -rf not_match_img_one/*
-python3.6 model_test_image.py  not_match_img_one $input_gt_new #2>/dev/null
+python3.6 model_test_image.py  not_match_img_one $input_gt_new #
 #done
