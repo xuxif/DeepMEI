@@ -36,6 +36,11 @@ Pull docker image from docker hub
 ```
   sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r 19 -w /root/data/'
 ```
+  chm13
+```
+  sudo docker pull xuxiaofeiscu/deepmei:chm13
+  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r /root/DeepMEI/DeepMEI_model/reference/chm13v2.0.fa -w /root/data/'
+```
 ## Software version requirements (without docker): <br />
 1. samtools 1.15.1 (Other versions need to test whether the "samtools coverage and samtools import" function is included)<br />
 2. bedtools v2.30.0<br />
