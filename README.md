@@ -57,7 +57,7 @@ Pull docker image from docker hub
 ### Configure your server with Conda (Recommanded)
 Due to the large size of the DeepMEI model file (over 600 MB), it is not feasible to include it in the conda package. Users will need to download the DeepMEI code separately from GitHub. To set up the required environment, users should run the following command:
  ```
-  conda create -n deepmei -c conda-forge -c bioconda 'tensorflow>=2.7.0,<2.12' 'samtools>=1.15' 'pysam=0.17' 'bedtools=2.30' 'bwa>=0.7.17' 'repeatmasker=4.1.2' 'python>=3.8,<3.10' 'perl=5.32' -y
+  conda create -n deepmei -c conda-forge -c bioconda 'tensorflow>=2.7.0,<2.12' 'samtools>=1.15' 'pysam=0.17' 'bedtools=2.30' 'bwa>=0.7.17' 'repeatmasker=4.1.2' 'python>=3.8,<3.10' 'perl=5.32' bc -y
   conda activate deepmei
  ```
   Installing DeepMEI with Conda might take a long time, primarily because the installation of RepeatMasker requires significant time to download the library files.
