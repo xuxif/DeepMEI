@@ -41,6 +41,29 @@ Pull docker image from docker hub
   sudo docker pull xuxiaofeiscu/deepmei:chm13
   sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:chm13  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r /root/DeepMEI/DeepMEI_model/reference/chm13v2.0.fa -w /root/data/'
 ```
+## Installation and Usage with Apptainer (Singularity) <br />
+We have provided an Apptainer (formerly Singularity) version of DeepMEI for easy deployment and use. Follow these steps to get started:
+1. Download the DeepMEI Apptainer Image
+You can download the DeepMEI Apptainer image from Zenodo:
+Download <a href="https://zenodo.org/records/14928972/files/deepmei.sif?download=1">deepmei.sif</a>
+2. Convert the Image to a Sandbox (Optional but Recommended)
+Converting the .sif image to a sandbox allows for easier modification and access to the container's filesystem.
+```
+  apptainer build --sandbox deepmei_app deepmei.sif
+```
+This will create a directory named deepmei_app containing the sandboxed environment.
+4. Run DeepMEI
+Once converted the image into a container , you can run DeepMEI with the following command:
+```
+apptainer exec --fakeroot --cleanenv --no-home --writable --bind /path/to/input/data:/opt/data deepmei_app/ DeepMEI -i /opt/data/you_bam_file.bam -r /opt/data/DeepMEI/DeepMEI_model/reference/hs37d5.fa
+```
+Replace /path/to/input/data with the actual path to your input bam file.
+The container includes pre-loaded reference genomes:
+‌hs37d5 (hg19)‌
+  Path: /opt/data/DeepMEI/DeepMEI_model/reference/hs37d5.fa
+‌GRCh38 (Homo_sapiens_assembly38)‌
+  Path: /opt/data/DeepMEI/DeepMEI_model/reference/Homo_sapiens_assembly38.fasta
+The output will be generated in a DeepMEI_output folder within the location of the BAM file on the host system.
 ## Software version requirements (without docker): <br />
 1. samtools 1.15.1 (Other versions need to test whether the "samtools coverage and samtools import" function is included)<br />
 2. bedtools v2.30.0<br />
