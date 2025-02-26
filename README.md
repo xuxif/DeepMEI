@@ -58,7 +58,7 @@ Once converted the image into a container , you can run DeepMEI with the followi
 ```
 apptainer exec --fakeroot --cleanenv --no-home --writable --bind /path/to/input/data:/opt/data deepmei_app/ DeepMEI -i /opt/data/you_bam_file.bam -r /opt/data/DeepMEI/DeepMEI_model/reference/hs37d5.fa
 ```
-Replace /path/to/input/data with the actual path to your input bam file. <br />
+Replace /path/to/input/data with the actual path to your input bam file and correct referece file. <br />
 The container includes pre-loaded reference genomes:<br />
 ‌hs37d5 (hg19)‌<br />
   Path: /opt/data/DeepMEI/DeepMEI_model/reference/hs37d5.fa<br />
