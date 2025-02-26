@@ -58,13 +58,13 @@ Once converted the image into a container , you can run DeepMEI with the followi
 ```
 apptainer exec --fakeroot --cleanenv --no-home --writable --bind /path/to/input/data:/opt/data deepmei_app/ DeepMEI -i /opt/data/you_bam_file.bam -r /opt/data/DeepMEI/DeepMEI_model/reference/hs37d5.fa
 ```
-Replace /path/to/input/data with the actual path to your input bam file.
-The container includes pre-loaded reference genomes:
-‌hs37d5 (hg19)‌
-  Path: /opt/data/DeepMEI/DeepMEI_model/reference/hs37d5.fa
-‌GRCh38 (Homo_sapiens_assembly38)‌
-  Path: /opt/data/DeepMEI/DeepMEI_model/reference/Homo_sapiens_assembly38.fasta
-The output will be generated in a DeepMEI_output folder within the location of the BAM file on the host system.
+Replace /path/to/input/data with the actual path to your input bam file. <br />
+The container includes pre-loaded reference genomes:<br />
+‌hs37d5 (hg19)‌<br />
+  Path: /opt/data/DeepMEI/DeepMEI_model/reference/hs37d5.fa<br />
+‌GRCh38 (Homo_sapiens_assembly38)‌<br />
+  Path: /opt/data/DeepMEI/DeepMEI_model/reference/Homo_sapiens_assembly38.fasta<br />
+The output will be generated in a DeepMEI_output folder within the location of the BAM file on the host system.<br />
 ## Software version requirements (without docker): <br />
 1. samtools 1.15.1 (Other versions need to test whether the "samtools coverage and samtools import" function is included)<br />
 2. bedtools v2.30.0<br />
