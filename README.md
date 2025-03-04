@@ -51,12 +51,20 @@ Converting the .sif image to a sandbox allows for easier modification and access
 ```
   apptainer build --sandbox deepmei_app deepmei.sif
 ```
+Or
+```
+  singularity build --sandbox deepmei_app deepmei.sif
+```
 This will create a directory named deepmei_app containing the sandboxed environment.
 
 3. Run DeepMEI
 Once converted the image into a container , you can run DeepMEI with the following command:
 ```
-apptainer exec --fakeroot --cleanenv --no-home --writable --bind /path/to/input/data:/opt/data deepmei_app/ DeepMEI -i /opt/data/you_bam_file.bam -r /opt/data/DeepMEI/DeepMEI_model/reference/hs37d5.fa
+apptainer exec --cleanenv --no-home --writable --bind /path/to/input/data:/opt/data deepmei_app/ DeepMEI -i /opt/data/you_bam_file.bam -r /opt/data/DeepMEI/DeepMEI_model/reference/hs37d5.fa
+```
+Or
+```
+singularity exec --cleanenv --no-home --writable --bind /path/to/input/data:/opt/data deepmei_app/ DeepMEI -i /opt/data/you_bam_file.bam -r /opt/data/DeepMEI/DeepMEI_model/reference/hs37d5.fa
 ```
 Replace /path/to/input/data with the actual path to your input bam file and correct referece file. <br />
 The container includes pre-loaded reference genomes:<br />
