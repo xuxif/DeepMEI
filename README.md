@@ -30,16 +30,16 @@ Pull docker image from docker hub
 
   GRCh38:
 ```
-  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r 38 -w /root/data/'
+docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r 38 -w /root/data/'
 ```
   hs37d5, hg19 or GRCh37:
 ```
-  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r 19 -w /root/data/'
+ docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:latest  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r 19 -w /root/data/'
 ```
   chm13
 ```
-  sudo docker pull xuxiaofeiscu/deepmei:chm13
-  sudo docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:chm13  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r /root/DeepMEI/DeepMEI_model/reference/chm13v2.0.fa -w /root/data/'
+ docker pull xuxiaofeiscu/deepmei:chm13
+ docker run -it  -v /Bind_mount_a_volume_to_include_input_bam_file/:/root/data/ -w /root xuxiaofeiscu/deepmei:chm13  /bin/bash -c 'export PATH=/root/miniconda3/bin:$PATH;./DeepMEI/DeepMEI -i /root/data/you_bam_file.bam  -r /root/DeepMEI/DeepMEI_model/reference/chm13v2.0.fa -w /root/data/'
 ```
 ## Installation and Usage with Apptainer (Singularity) <br />
 We have provided an Apptainer (formerly Singularity) version of DeepMEI for easy deployment and use. Follow these steps to get started:
