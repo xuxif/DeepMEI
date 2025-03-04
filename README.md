@@ -73,7 +73,7 @@ The container includes pre-loaded reference genomes:<br />
 ‌GRCh38 (Homo_sapiens_assembly38)‌<br />
   Path: /opt/data/DeepMEI/DeepMEI_model/reference/Homo_sapiens_assembly38.fasta<br />
 The output will be generated in a DeepMEI_output folder within the location of the BAM file on the host system.<br />
-## Software version requirements (without docker): <br />
+## Software version requirements (without container): <br />
 1. samtools 1.15.1 (Other versions need to test whether the "samtools coverage and samtools import" function is included)<br />
 2. bedtools v2.30.0<br />
 3. pysam 0.17.0<br />
